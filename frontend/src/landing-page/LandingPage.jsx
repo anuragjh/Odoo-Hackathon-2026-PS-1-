@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { BackgroundRippleEffect } from '../components/ui/BackgroundRippleEffect';
+import { SparklesCore } from '../components/ui/Sparkles';
 import './LandingPage.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -472,6 +473,21 @@ export default function LandingPage() {
             Open the dashboard and start managing departments, assets,
             bookings, and audits — all in one place.
           </p>
+          <div className="lp-sparkles-container lp-anim">
+            <div className="lp-sparkles-gradient-1" />
+            <div className="lp-sparkles-gradient-2" />
+            <div className="lp-sparkles-gradient-3" />
+            <div className="lp-sparkles-gradient-4" />
+            <SparklesCore
+              background="transparent"
+              minSize={0.4}
+              maxSize={1.4}
+              particleDensity={140}
+              className="w-full h-full"
+              particleColor="#FFFFFF"
+            />
+            <div className="lp-sparkles-mask" />
+          </div>
           <button
             className="lp-btn-primary lp-btn-primary--lg lp-anim"
             onClick={() => navigate('/dashboard')}

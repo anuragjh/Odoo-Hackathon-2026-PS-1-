@@ -787,6 +787,8 @@
 .lp-cta-sect {
   padding: 8rem 2.5rem;
   border-bottom: 1px solid var(--border);
+  position: relative;
+  background: #09090B;
 }
 .lp-cta-inner {
   max-width: 640px;
@@ -805,7 +807,65 @@
   font-size: 0.95rem;
   color: #E4E4E7 !important;
   line-height: 1.75;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Sparkles effect ── */
+.lp-sparkles-container {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 48px;
+  margin: 1.5rem auto 2rem;
+  overflow: hidden;
+}
+
+.lp-sparkles-gradient-1 {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
+  height: 2px;
+  filter: blur(4px);
+}
+
+.lp-sparkles-gradient-2 {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.25), transparent);
+  height: 1px;
+}
+
+.lp-sparkles-gradient-3 {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  top: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+  height: 4px;
+  filter: blur(6px);
+}
+
+.lp-sparkles-gradient-4 {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  top: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  height: 1px;
+}
+
+.lp-sparkles-mask {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #09090B;
+  mask-image: radial-gradient(180px 48px at top, transparent 20%, white);
+  -webkit-mask-image: radial-gradient(180px 48px at top, transparent 20%, white);
 }
 
 /* ── Footer ───────────────────────────────────────────────────── */
