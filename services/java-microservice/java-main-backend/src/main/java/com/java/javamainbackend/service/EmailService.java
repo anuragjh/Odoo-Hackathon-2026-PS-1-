@@ -78,7 +78,7 @@ public class EmailService {
 
     @Async("emailExecutor")
     public void sendAccountApprovedEmail(String to, String name) {
-        String link = properties.frontendUrl() + "/login";
+       String link = properties.frontendUrl() + "/signin";
         send(to, name,
                 "Your account has been approved - " + brandName,
                 buildHtml("You're in!", name,
