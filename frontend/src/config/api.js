@@ -12,61 +12,64 @@ export const AUTH_ENDPOINTS = {
   changePassword: '/auth/change-password',
 };
 
-export const ADMIN_USER_ENDPOINTS = {
-  users: '/admin/users',
-  pending: '/admin/users/pending',
-  approve: (id) => `/admin/users/${id}/approve`,
-  reject: (id) => `/admin/users/${id}/reject`,
-  role: (id) => `/admin/users/${id}/role`,
-  unlock: (id) => `/admin/users/${id}/unlock`,
+const V1 = '/api/v1/admin';
+
+export const DASHBOARD_ENDPOINTS = {
+  orgSetup: `${V1}/dashboard/organization-setup`,
 };
 
-const ORG_SETUP_BASE = '/api/v1/admin';
-
 export const ORGANIZATION_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/organizations`,
-  dashboard: `${ORG_SETUP_BASE}/dashboard`,
-  byId: (id) => `${ORG_SETUP_BASE}/organizations/${id}`,
+  base: `${V1}/organization`,
 };
 
 export const DEPARTMENT_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/departments`,
-  byId: (id) => `${ORG_SETUP_BASE}/departments/${id}`,
-  head: (id) => `${ORG_SETUP_BASE}/departments/${id}/head`,
-};
-
-export const EMPLOYEE_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/employees`,
-  statistics: `${ORG_SETUP_BASE}/employees/statistics`,
-  byId: (id) => `${ORG_SETUP_BASE}/employees/${id}`,
-  role: (id) => `${ORG_SETUP_BASE}/employees/${id}/role`,
-  department: (id) => `${ORG_SETUP_BASE}/employees/${id}/department`,
+  base: `${V1}/departments`,
+  byId: (id) => `${V1}/departments/${id}`,
+  activate: (id) => `${V1}/departments/${id}/activate`,
+  deactivate: (id) => `${V1}/departments/${id}/deactivate`,
+  head: (id) => `${V1}/departments/${id}/head`,
 };
 
 export const CATEGORY_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/categories`,
-  byId: (id) => `${ORG_SETUP_BASE}/categories/${id}`,
+  base: `${V1}/asset-categories`,
+  byId: (id) => `${V1}/asset-categories/${id}`,
+  activate: (id) => `${V1}/asset-categories/${id}/activate`,
+  deactivate: (id) => `${V1}/asset-categories/${id}/deactivate`,
+};
+
+export const EMPLOYEE_ENDPOINTS = {
+  base: `${V1}/employees`,
+  statistics: `${V1}/employees/statistics`,
+  me: `${V1}/employees/me`,
+  byId: (id) => `${V1}/employees/${id}`,
+  approve: (id) => `${V1}/employees/${id}/approve`,
+  reject: (id) => `${V1}/employees/${id}/reject`,
+  activate: (id) => `${V1}/employees/${id}/activate`,
+  suspend: (id) => `${V1}/employees/${id}/suspend`,
+  unlock: (id) => `${V1}/employees/${id}/unlock`,
+  role: (id) => `${V1}/employees/${id}/role`,
+  department: (id) => `${V1}/employees/${id}/department`,
 };
 
 export const ASSET_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/assets`,
-  dashboard: `${ORG_SETUP_BASE}/assets/dashboard`,
-  statistics: `${ORG_SETUP_BASE}/assets/statistics`,
-  byId: (id) => `${ORG_SETUP_BASE}/assets/${id}`,
-  status: (id) => `${ORG_SETUP_BASE}/assets/${id}/status`,
-  documents: (id) => `${ORG_SETUP_BASE}/assets/${id}/documents`,
-  history: (id) => `${ORG_SETUP_BASE}/assets/${id}/history`,
+  base: `${V1}/assets`,
+  dashboard: `${V1}/assets/dashboard`,
+  statistics: `${V1}/assets/statistics`,
+  byId: (id) => `${V1}/assets/${id}`,
+  status: (id) => `${V1}/assets/${id}/status`,
+  documents: (id) => `${V1}/assets/${id}/documents`,
+  history: (id) => `${V1}/assets/${id}/history`,
 };
 
 export const ALLOCATION_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/allocations`,
-  dashboard: `${ORG_SETUP_BASE}/allocations/dashboard`,
-  byId: (id) => `${ORG_SETUP_BASE}/allocations/${id}`,
-  return: (id) => `${ORG_SETUP_BASE}/allocations/${id}/return`,
+  base: `${V1}/allocations`,
+  dashboard: `${V1}/allocations/dashboard`,
+  byId: (id) => `${V1}/allocations/${id}`,
+  return: (id) => `${V1}/allocations/${id}/return`,
 };
 
 export const TRANSFER_ENDPOINTS = {
-  base: `${ORG_SETUP_BASE}/transfers`,
-  approve: (id) => `${ORG_SETUP_BASE}/transfers/${id}/approve`,
-  reject: (id) => `${ORG_SETUP_BASE}/transfers/${id}/reject`,
+  base: `${V1}/transfers`,
+  approve: (id) => `${V1}/transfers/${id}/approve`,
+  reject: (id) => `${V1}/transfers/${id}/reject`,
 };

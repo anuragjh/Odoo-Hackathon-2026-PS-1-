@@ -1,380 +1,278 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { 
-  CheckSquare, ArrowLeftRight, RotateCcw, AlertTriangle, 
-  UserCheck, ShieldAlert, ArrowRight, UserPlus
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import PageHeader from '../../components/ui/PageHeader';
+import Modal from '../../components/ui/Modal';
+import Badge from '../../components/ui/Badge';
+import { useApi } from '../../hooks/useApi';
+import { allocationService, assetService, employeeService, transferService } from '../../services/resourceService';
+import { ALLOCATION_STATUS, ALLOCATION_STATUS_LABELS, ASSET_CONDITION, TRANSFER_STATUS_LABELS } from '../../config/enums';
+import {
+  Loading, ErrorState, DataTable, Td, Field, Input, Select, Textarea,
+  PrimaryButton, GhostButton, formatDate, toLabel,
+} from '../ui/DataStates';
 
-function Allocations() {
-  const { 
-    assets, employees, transfers,
-    allocateAsset, createTransferRequest, approveTransfer, returnAsset 
-  } = useContext(AppContext);
+export default function Allocations() {
+  const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(0);
+  const [showAllocate, setShowAllocate] = useState(false);
+  const [returnFor, setReturnFor] = useState(null);
+  const [transferFor, setTransferFor] = useState(null);
+  const [transferRequests, setTransferRequests] = useState([]);
 
-  // States
-  const [selectedAssetId, setSelectedAssetId] = useState('');
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
-  const [returnDate, setReturnDate] = useState('');
-  const [maintReason, setMaintReason] = useState('');
-  
-  // Conflict States
-  const [conflictError, setConflictError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
+  const list = useApi(
+    () => allocationService.list({ status: statusFilter || undefined, page, size: 10 }),
+    [statusFilter, page]
+  );
 
-  // Return Modal State
-  const [returnModal, setReturnModal] = useState(false);
-  const [returningAsset, setReturningAsset] = useState(null);
-  const [checkInCondition, setCheckInCondition] = useState('Good');
-
-  // Submit allocation
-  const handleAllocate = (e) => {
-    e.preventDefault();
-    setConflictError(null);
-    setSuccessMsg(null);
-
-    if (!selectedAssetId || !selectedEmployeeId) {
-      setConflictError({ message: 'Please select both an asset and an employee.' });
-      return;
-    }
-
-    const res = allocateAsset(selectedAssetId, selectedEmployeeId, returnDate);
-    if (res.success) {
-      setSuccessMsg('Asset allocated successfully!');
-      setSelectedAssetId('');
-      setSelectedEmployeeId('');
-      setReturnDate('');
-    } else {
-      // It is a conflict error!
-      if (res.currentHolder) {
-        setConflictError({
-          message: res.error,
-          conflict: true,
-          assetId: selectedAssetId,
-          holder: res.currentHolder,
-          holderId: res.holderId,
-          targetEmployeeId: selectedEmployeeId
-        });
-      } else {
-        setConflictError({ message: res.error });
-      }
+  const decideTransfer = async (transfer, action) => {
+    try {
+      const updated = action === 'approve'
+        ? await transferService.approve(transfer.id)
+        : await transferService.reject(transfer.id);
+      setTransferRequests((prev) => prev.map((t) => (t.id === transfer.id ? updated : t)));
+      list.refetch();
+    } catch (err) {
+      alert(err.message);
     }
   };
-
-  // Trigger Transfer Request
-  const handleRequestTransfer = () => {
-    if (!conflictError) return;
-    const res = createTransferRequest(conflictError.assetId, conflictError.targetEmployeeId, 'Requested via allocation conflict workflow.');
-    if (res.success) {
-      setSuccessMsg('Transfer request raised successfully! Pending manager review.');
-      setConflictError(null);
-      setSelectedAssetId('');
-      setSelectedEmployeeId('');
-    } else {
-      setConflictError({ message: res.error });
-    }
-  };
-
-  // Approve Transfer
-  const handleApproveTransfer = (transferId) => {
-    approveTransfer(transferId);
-    setSuccessMsg('Transfer request approved and asset reallocated!');
-  };
-
-  // Open return modal
-  const openReturnModal = (asset) => {
-    setReturningAsset(asset);
-    setCheckInCondition(asset.condition);
-    setReturnModal(true);
-  };
-
-  // Submit return
-  const handleReturnSubmit = (e) => {
-    e.preventDefault();
-    if (!returningAsset) return;
-    returnAsset(returningAsset.id, checkInCondition);
-    setReturnModal(false);
-    setReturningAsset(null);
-    setSuccessMsg('Asset returned successfully and marked as Available!');
-  };
-
-  // Overdue check logic
-  const currentDate = new Date('2026-07-12');
-  const allocatedAssets = assets.filter(a => a.status === 'Allocated');
-  
-  const overdueAllocations = allocatedAssets.filter(a => {
-    if (!a.expectedReturn) return false;
-    return new Date(a.expectedReturn) < currentDate;
-  });
 
   return (
-    <div className="af-page space-y-6 animate-slide-in-up">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Asset Allocations & Transfers</h1>
-        <p className="text-xs text-muted-foreground">Manage handovers, transfer requests, and asset return conditions.</p>
+    <div style={{ padding: '1.5rem' }}>
+      <PageHeader title="Allocation & Transfer" subtitle="Manage who holds what, with conflict handling">
+        <PrimaryButton onClick={() => setShowAllocate(true)}><Plus size={15} style={{ marginRight: 4 }} /> Allocate Asset</PrimaryButton>
+      </PageHeader>
+
+      <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1rem' }}>
+        <Select value={statusFilter} onChange={(e) => { setPage(0); setStatusFilter(e.target.value); }} style={{ maxWidth: 200 }}>
+          <option value="">All statuses</option>
+          {Object.values(ALLOCATION_STATUS).map((s) => <option key={s} value={s}>{ALLOCATION_STATUS_LABELS[s]}</option>)}
+        </Select>
       </div>
 
-      {/* Success/Error Toast */}
-      {successMsg && (
-        <div className="p-4 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-400 font-semibold text-xs flex justify-between items-center">
-          <span>{successMsg}</span>
-          <button onClick={() => setSuccessMsg(null)} className="hover:underline text-[10px]">Dismiss</button>
+      {list.loading ? (
+        <Loading label="Loading allocations…" />
+      ) : list.error ? (
+        <ErrorState message={list.error} onRetry={list.refetch} />
+      ) : (
+        <>
+          <DataTable
+            columns={['Asset', 'Holder', 'Allocated', 'Expected Return', 'Status', '']}
+            rows={list.data?.content || []}
+            empty="No allocations yet."
+            renderRow={(row) => (
+              <tr key={row.id}>
+                <Td style={{ color: 'var(--text-primary)' }}><strong>{row.assetTag}</strong> · {row.assetName}</Td>
+                <Td>{row.allocatedToName || row.departmentName || '—'}</Td>
+                <Td>{formatDate(row.allocatedDate)}</Td>
+                <Td style={{ color: row.overdue ? 'var(--danger)' : undefined }}>
+                  {formatDate(row.expectedReturnDate)}{row.overdue ? ' · overdue' : ''}
+                </Td>
+                <Td><Badge status={row.overdue ? 'overdue' : ALLOCATION_STATUS_LABELS[row.status]}>{row.overdue ? 'Overdue' : ALLOCATION_STATUS_LABELS[row.status]}</Badge></Td>
+                <Td>
+                  {row.status !== 'RETURNED' && (
+                    <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      <GhostButton onClick={() => setReturnFor(row)}>Return</GhostButton>
+                      <GhostButton onClick={() => setTransferFor(row)}>Transfer</GhostButton>
+                    </div>
+                  )}
+                </Td>
+              </tr>
+            )}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.85rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <span>{list.data?.totalElements || 0} total · page {(list.data?.page || 0) + 1} of {Math.max(list.data?.totalPages || 1, 1)}</span>
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              <GhostButton disabled={list.data?.first} onClick={() => setPage(page - 1)}>Prev</GhostButton>
+              <GhostButton disabled={list.data?.last} onClick={() => setPage(page + 1)}>Next</GhostButton>
+            </div>
+          </div>
+        </>
+      )}
+
+      {transferRequests.length > 0 && (
+        <div style={{ marginTop: '1.75rem' }}>
+          <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
+            Transfer Requests <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>(this session)</span>
+          </h2>
+          <DataTable
+            columns={['Asset', 'To', 'Reason', 'Status', '']}
+            rows={transferRequests}
+            renderRow={(t) => (
+              <tr key={t.id}>
+                <Td style={{ color: 'var(--text-primary)' }}><strong>{t.assetTag}</strong> · {t.assetName}</Td>
+                <Td>{t.toUserName || t.toDepartmentName || '—'}</Td>
+                <Td>{t.reason || '—'}</Td>
+                <Td><Badge status={TRANSFER_STATUS_LABELS[t.status]}>{TRANSFER_STATUS_LABELS[t.status]}</Badge></Td>
+                <Td>
+                  {t.status === 'PENDING' && (
+                    <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      <GhostButton onClick={() => decideTransfer(t, 'approve')}>Approve</GhostButton>
+                      <GhostButton onClick={() => decideTransfer(t, 'reject')}>Reject</GhostButton>
+                    </div>
+                  )}
+                </Td>
+              </tr>
+            )}
+          />
         </div>
       )}
 
-      {/* Allocation Panel & Conflict Resolution */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Allocate Form */}
-        <div className="glass-card af-card hover-lift p-5 h-fit">
-          <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-1.5">
-            <UserPlus className="w-4 h-4 text-primary" />
-            <span>New Allocation</span>
-          </h2>
-          <form onSubmit={handleAllocate} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1">Select Asset</label>
-              <select 
-                value={selectedAssetId}
-                onChange={(e) => {
-                  setSelectedAssetId(e.target.value);
-                  setConflictError(null);
-                }}
-                className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
-              >
-                <option value="">-- Choose Asset --</option>
-                {assets.map(a => (
-                  <option key={a.id} value={a.id}>{a.name} ({a.id}) - {a.status}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1">Assign to Employee</label>
-              <select 
-                value={selectedEmployeeId}
-                onChange={(e) => {
-                  setSelectedEmployeeId(e.target.value);
-                  setConflictError(null);
-                }}
-                className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
-              >
-                <option value="">-- Choose Employee --</option>
-                {employees.map(e => (
-                  <option key={e.id} value={e.id}>{e.name} ({e.department})</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1">Expected Return Date (Optional)</label>
-              <input 
-                type="date"
-                value={returnDate}
-                onChange={(e) => setReturnDate(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
-              />
-            </div>
-
-            {/* Conflict Error Block */}
-            {conflictError && (
-              <div className="p-3.5 rounded-xl clay-alert-danger space-y-2 text-xs">
-                <div className="flex items-start gap-1.5 font-semibold">
-                  <AlertTriangle className="w-4 h-4 shrink-0 text-white" />
-                  <span>{conflictError.message}</span>
-                </div>
-                {conflictError.conflict && (
-                  <div className="pt-1.5 flex flex-col gap-2">
-                    <p className="text-[11px] opacity-90">Would you like to initiate a direct Transfer Request from {conflictError.holder}?</p>
-                    <button 
-                      type="button" 
-                      onClick={handleRequestTransfer}
-                      className="w-full inline-flex items-center justify-center gap-1 bg-white/20 hover:bg-white/35 text-white font-bold py-1.5 rounded-lg text-[10px] transition-colors border border-white/10"
-                    >
-                      <ArrowLeftRight className="w-3.5 h-3.5" />
-                      <span>Request Transfer</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <button 
-              type="submit"
-              className="w-full bg-primary text-primary-foreground font-semibold py-2 rounded-lg text-xs hover:bg-primary/95 transition-all shadow-md neu-btn-primary"
-            >
-              Confirm Assignment
-            </button>
-          </form>
-        </div>
-
-        {/* Transfers & Returns Grid */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Overdue returns banner alerts */}
-          {overdueAllocations.length > 0 && (
-            <div className="clay-alert-danger p-5 space-y-3">
-              <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4 text-white animate-pulse" />
-                <span>Overdue Asset Handback Required</span>
-              </h2>
-              <div className="space-y-2">
-                {overdueAllocations.map(asset => (
-                  <div 
-                    key={asset.id} 
-                    className="flex justify-between items-center bg-black/15 dark:bg-black/25 border border-white/10 p-3 rounded-xl text-xs"
-                  >
-                    <div>
-                      <span className="font-semibold text-white">{asset.name}</span>
-                      <p className="text-[10px] text-white/80 mt-0.5">Holder: {asset.holder} &bull; Expected Return: <span className="font-bold text-white underline">{asset.expectedReturn}</span></p>
-                    </div>
-                    <button 
-                      onClick={() => openReturnModal(asset)}
-                      className="px-2.5 py-1 bg-white/25 hover:bg-white/40 text-white font-bold rounded-lg text-[10px] flex items-center gap-1 border border-white/10"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>Return</span>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Active Allocations List */}
-          <div className="glass-card af-card hover-lift p-5">
-            <h2 className="text-sm font-bold text-foreground mb-4">Active Staff Allocations</h2>
-            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-              {allocatedAssets.length === 0 ? (
-                <div className="py-8 text-center text-xs text-muted-foreground">No assets currently allocated.</div>
-              ) : (
-                allocatedAssets.map(asset => (
-                  <div 
-                    key={asset.id} 
-                    className="flex items-center justify-between p-3 rounded-xl border border-border hover:bg-secondary/40 hover:scale-[1.01] hover:border-primary/30 transition-all text-xs"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-foreground">{asset.name}</span>
-                        <span className="text-[10px] text-muted-foreground font-mono">({asset.id})</span>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Held by: <span className="font-semibold">{asset.holder}</span> {asset.expectedReturn ? ` &bull; Due: ${asset.expectedReturn}` : ''}</p>
-                    </div>
-                    
-                    <button 
-                      onClick={() => openReturnModal(asset)}
-                      className="px-3 py-1.5 border hover:bg-secondary rounded-lg font-semibold text-[10px] neu-btn"
-                    >
-                      Process Return
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Pending Transfer Requests */}
-          <div className="glass-card af-card hover-lift p-5">
-            <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-1.5">
-              <ArrowLeftRight className="w-4 h-4 text-primary" />
-              <span>Pending Transfer Requests</span>
-            </h2>
-            <div className="space-y-3">
-              {transfers.length === 0 ? (
-                <div className="py-8 text-center text-xs text-muted-foreground">No pending transfer requests.</div>
-              ) : (
-                transfers.map(trans => (
-                  <div 
-                    key={trans.id} 
-                    className="p-4 rounded-xl border bg-secondary/30 border-border space-y-2 text-xs hover:scale-[1.01] transition-all hover:border-primary/20"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-foreground">{trans.assetName}</span>
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                        trans.status === 'Requested' ? 'bg-amber-100 text-amber-800' :
-                        trans.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' :
-                        'bg-rose-100 text-rose-800'
-                      }`}>
-                        {trans.status}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <span>{trans.fromUser}</span>
-                      <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                      <span>{trans.toUser}</span>
-                    </div>
-
-                    {trans.status === 'Requested' && (
-                      <div className="pt-2 flex justify-end gap-2">
-                        <button 
-                          onClick={() => handleApproveTransfer(trans.id)}
-                          className="px-3 py-1.5 bg-primary text-primary-foreground font-semibold rounded-lg text-[10px] neu-btn-primary"
-                        >
-                          Approve Transfer
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* RETURN CHECK-IN MODAL */}
-      {returnModal && returningAsset && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setReturnModal(false)} />
-          <div className="relative bg-card border border-border w-full max-w-sm p-6 rounded-2xl shadow-xl animate-slide-in-up">
-            <h2 className="text-md font-bold text-foreground mb-4">Asset Return Check-in</h2>
-            <form onSubmit={handleReturnSubmit} className="space-y-4">
-              <div className="text-xs space-y-1">
-                <span className="text-muted-foreground">Asset returning:</span>
-                <p className="font-bold text-foreground">{returningAsset.name} ({returningAsset.id})</p>
-                <p className="text-muted-foreground mt-1">Returned by: <span className="font-semibold">{returningAsset.holder}</span></p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1">Check-in Condition Notes</label>
-                <select 
-                  value={checkInCondition}
-                  onChange={(e) => setCheckInCondition(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
-                >
-                  <option value="Excellent">Excellent</option>
-                  <option value="Good">Good</option>
-                  <option value="Fair">Fair (Needs clean/minor check)</option>
-                  <option value="Damaged">Damaged (Triggers repair review)</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setReturnModal(false);
-                    setReturningAsset(null);
-                  }}
-                  className="px-3 py-1.5 border rounded-lg text-xs hover:bg-secondary"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="px-3 py-1.5 bg-primary text-primary-foreground font-semibold rounded-lg text-xs"
-                >
-                  Complete Return
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {showAllocate && <AllocateModal onClose={() => setShowAllocate(false)} onDone={() => { setShowAllocate(false); list.refetch(); }} />}
+      {returnFor && <ReturnModal allocation={returnFor} onClose={() => setReturnFor(null)} onDone={() => { setReturnFor(null); list.refetch(); }} />}
+      {transferFor && (
+        <TransferModal
+          allocation={transferFor}
+          onClose={() => setTransferFor(null)}
+          onDone={(created) => {
+            setTransferFor(null);
+            if (created) setTransferRequests((prev) => [created, ...prev]);
+            list.refetch();
+          }}
+        />
       )}
     </div>
   );
 }
 
-export default Allocations;
+function AllocateModal({ onClose, onDone }) {
+  const [form, setForm] = useState({ assetId: '', allocatedToUserId: '', expectedReturnDate: '', notes: '' });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const assets = useApi(() => assetService.list({ status: 'AVAILABLE', size: 200 }), []);
+  const emps = useApi(() => employeeService.list({ status: 'ACTIVE', size: 200 }), []);
+
+  const submit = async () => {
+    if (!form.assetId || !form.allocatedToUserId) {
+      setError('Asset and employee are required.');
+      return;
+    }
+    setSaving(true);
+    setError('');
+    try {
+      await allocationService.allocate({
+        assetId: form.assetId,
+        allocatedToUserId: form.allocatedToUserId,
+        expectedReturnDate: form.expectedReturnDate || undefined,
+        notes: form.notes || undefined,
+      });
+      onDone();
+    } catch (err) {
+      setError(err.message);
+    }
+    setSaving(false);
+  };
+
+  return (
+    <Modal open onClose={onClose} title="Allocate Asset" maxWidth="520px">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <Field label="Available asset" required>
+          <Select value={form.assetId} onChange={(e) => setForm({ ...form, assetId: e.target.value })}>
+            <option value="">Select asset…</option>
+            {(assets.data?.content || []).map((a) => <option key={a.id} value={a.id}>{a.assetTag} · {a.assetName}</option>)}
+          </Select>
+        </Field>
+        <Field label="Allocate to employee" required>
+          <Select value={form.allocatedToUserId} onChange={(e) => setForm({ ...form, allocatedToUserId: e.target.value })}>
+            <option value="">Select employee…</option>
+            {(emps.data?.content || []).map((u) => <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>)}
+          </Select>
+        </Field>
+        <Field label="Expected return date"><Input type="date" value={form.expectedReturnDate} onChange={(e) => setForm({ ...form, expectedReturnDate: e.target.value })} /></Field>
+        <Field label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
+      </div>
+      {error && <p style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: '0.6rem' }}>{error}</p>}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+        <GhostButton onClick={onClose}>Cancel</GhostButton>
+        <PrimaryButton onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Allocate'}</PrimaryButton>
+      </div>
+    </Modal>
+  );
+}
+
+function ReturnModal({ allocation, onClose, onDone }) {
+  const [form, setForm] = useState({ returnCondition: 'GOOD', returnNotes: '' });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async () => {
+    setSaving(true);
+    setError('');
+    try {
+      await allocationService.returnAsset(allocation.id, {
+        returnCondition: form.returnCondition || undefined,
+        returnNotes: form.returnNotes || undefined,
+      });
+      onDone();
+    } catch (err) {
+      setError(err.message);
+    }
+    setSaving(false);
+  };
+
+  return (
+    <Modal open onClose={onClose} title={`Return ${allocation.assetTag}`} maxWidth="460px">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <Field label="Condition on return">
+          <Select value={form.returnCondition} onChange={(e) => setForm({ ...form, returnCondition: e.target.value })}>
+            {Object.values(ASSET_CONDITION).map((c) => <option key={c} value={c}>{toLabel(c)}</option>)}
+          </Select>
+        </Field>
+        <Field label="Check-in notes"><Textarea value={form.returnNotes} onChange={(e) => setForm({ ...form, returnNotes: e.target.value })} /></Field>
+      </div>
+      {error && <p style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: '0.6rem' }}>{error}</p>}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+        <GhostButton onClick={onClose}>Cancel</GhostButton>
+        <PrimaryButton onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Confirm Return'}</PrimaryButton>
+      </div>
+    </Modal>
+  );
+}
+
+function TransferModal({ allocation, onClose, onDone }) {
+  const [form, setForm] = useState({ toUserId: '', reason: '' });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const emps = useApi(() => employeeService.list({ status: 'ACTIVE', size: 200 }), []);
+
+  const submit = async () => {
+    if (!form.toUserId) {
+      setError('Select an employee to transfer to.');
+      return;
+    }
+    setSaving(true);
+    setError('');
+    try {
+      const created = await transferService.create({
+        assetId: allocation.assetId,
+        toUserId: form.toUserId,
+        reason: form.reason || undefined,
+      });
+      onDone(created);
+    } catch (err) {
+      setError(err.message);
+    }
+    setSaving(false);
+  };
+
+  return (
+    <Modal open onClose={onClose} title={`Request Transfer · ${allocation.assetTag}`} maxWidth="460px">
+      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+        Currently held by {allocation.allocatedToName || allocation.departmentName || 'current holder'}.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <Field label="Transfer to employee" required>
+          <Select value={form.toUserId} onChange={(e) => setForm({ ...form, toUserId: e.target.value })}>
+            <option value="">Select employee…</option>
+            {(emps.data?.content || []).map((u) => <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>)}
+          </Select>
+        </Field>
+        <Field label="Reason"><Textarea value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} /></Field>
+      </div>
+      {error && <p style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: '0.6rem' }}>{error}</p>}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+        <GhostButton onClick={onClose}>Cancel</GhostButton>
+        <PrimaryButton onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Request Transfer'}</PrimaryButton>
+      </div>
+    </Modal>
+  );
+}
