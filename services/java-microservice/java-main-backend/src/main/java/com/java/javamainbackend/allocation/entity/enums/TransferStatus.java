@@ -1,0 +1,7 @@
+package com.java.javamainbackend.allocation.entity.enums;
+
+public enum TransferStatus {
+    PENDING,
+    APPROVED,
+    REJECTED
+}
