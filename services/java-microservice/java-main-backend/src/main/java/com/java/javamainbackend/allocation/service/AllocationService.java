@@ -27,6 +27,7 @@ import com.java.javamainbackend.asset.entity.AssetEvent;
 import com.java.javamainbackend.asset.entity.enums.AssetStatus;
 import com.java.javamainbackend.asset.repository.AssetEventRepository;
 import com.java.javamainbackend.asset.repository.AssetRepository;
+import com.java.javamainbackend.notification.service.NotificationService;
 import jakarta.persistence.criteria.Predicate;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -52,6 +53,7 @@ public class AllocationService {
     private final AssetEventRepository assetEventRepository;
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
+    private final NotificationService notificationService;
 
     public AllocationService(
             AssetAllocationRepository allocationRepository,
@@ -59,13 +61,15 @@ public class AllocationService {
             AssetRepository assetRepository,
             AssetEventRepository assetEventRepository,
             UserRepository userRepository,
-            DepartmentRepository departmentRepository) {
+            DepartmentRepository departmentRepository,
+            NotificationService notificationService) {
         this.allocationRepository = allocationRepository;
         this.transferRepository = transferRepository;
         this.assetRepository = assetRepository;
         this.assetEventRepository = assetEventRepository;
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -105,6 +109,9 @@ public class AllocationService {
         assetRepository.save(asset);
 
         recordAssetEvent(asset.getId(), "ALLOCATED", "Allocated to " + holderLabel, principal.userId());
+        notificationService.notify(organizationId, request.allocatedToUserId(), "ASSET_ASSIGNED",
+                "Asset assigned", "You have been assigned " + asset.getAssetName() + " (" + asset.getAssetTag() + ")",
+                "ALLOCATION", allocation.getId());
 
         return toResponse(allocation, asset);
     }
@@ -133,6 +140,8 @@ public class AllocationService {
         assetRepository.save(asset);
 
         recordAssetEvent(asset.getId(), "RETURNED", "Asset returned", principal.userId());
+        notificationService.notify(organizationId, allocation.getAllocatedToUserId(), "RETURN_CONFIRMED",
+                "Return confirmed", asset.getAssetName() + " has been returned", "ALLOCATION", allocation.getId());
 
         return toResponse(allocation, asset);
     }
@@ -168,6 +177,9 @@ public class AllocationService {
         transfer.setCreatedAt(now);
         transfer.setUpdatedAt(now);
         transferRepository.save(transfer);
+        notificationService.notify(organizationId, active.getAllocatedToUserId(), "TRANSFER_REQUESTED",
+                "Transfer requested", "A transfer was requested for " + asset.getAssetName(),
+                "TRANSFER", transfer.getId());
 
         return toTransferResponse(transfer, asset);
     }
@@ -211,6 +223,9 @@ public class AllocationService {
         transferRepository.save(transfer);
 
         recordAssetEvent(asset.getId(), "TRANSFERRED", "Transfer approved", principal.userId());
+        notificationService.notify(organizationId, transfer.getToUserId(), "TRANSFER_APPROVED",
+                "Transfer approved", "You have been assigned " + asset.getAssetName() + " via transfer",
+                "TRANSFER", transfer.getId());
 
         return toTransferResponse(transfer, asset);
     }

@@ -37,6 +37,11 @@ public interface AssetRepository
             + "LOWER(a.assetTag) LIKE ?2 OR LOWER(a.assetName) LIKE ?2 OR LOWER(a.serialNumber) LIKE ?2)")
     List<UUID> searchIds(UUID organizationId, String pattern);
 
+    @Query("SELECT a FROM Asset a WHERE a.organizationId = ?1 "
+            + "AND (?2 IS NULL OR a.departmentId = ?2) "
+            + "AND (?3 IS NULL OR LOWER(a.location) LIKE ?3)")
+    List<Asset> findForAuditScope(UUID organizationId, UUID departmentId, String locationPattern);
+
     @Query(value = "SELECT nextval('asset_tag_seq')", nativeQuery = true)
     long nextAssetTagSequence();
 }

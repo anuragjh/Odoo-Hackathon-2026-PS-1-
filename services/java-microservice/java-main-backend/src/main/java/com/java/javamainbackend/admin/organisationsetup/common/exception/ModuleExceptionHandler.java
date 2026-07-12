@@ -4,17 +4,30 @@ import com.java.javamainbackend.admin.organisationsetup.common.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@RestControllerAdvice(basePackages = "com.java.javamainbackend.admin.organisationsetup.controller")
-public class GlobalExceptionHandler {
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@RestControllerAdvice(basePackages = {
+        "com.java.javamainbackend.admin.organisationsetup.controller",
+        "com.java.javamainbackend.asset.controller",
+        "com.java.javamainbackend.allocation.controller",
+        "com.java.javamainbackend.booking.controller",
+        "com.java.javamainbackend.maintenance.controller",
+        "com.java.javamainbackend.audit.controller",
+        "com.java.javamainbackend.reports.controller",
+        "com.java.javamainbackend.notification.controller",
+        "com.java.javamainbackend.dashboard",
+        "com.java.javamainbackend.upload"
+})
+public class ModuleExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<Object>> handleApi(ApiException ex) {
@@ -44,15 +57,9 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Invalid value for parameter '" + ex.getName() + "'", null));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error("Access denied", null));
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("Unexpected error", null));
+                .body(ApiResponse.error("Unexpected error: " + ex.getClass().getSimpleName(), null));
     }
 }
