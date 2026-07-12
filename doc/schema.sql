@@ -114,3 +114,57 @@ ON refresh_tokens(user_id);
 
 CREATE INDEX idx_refresh_token
 ON refresh_tokens(token);
+
+
+-- organization schema
+
+CREATE TABLE organizations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- Basic Information
+    organization_name VARCHAR(200) NOT NULL,
+    organization_code VARCHAR(30) UNIQUE NOT NULL,
+
+    legal_name VARCHAR(250),
+    description TEXT,
+
+    logo_url TEXT,
+    website VARCHAR(255),
+
+    -- Contact
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(25),
+
+    -- Address
+    address_line1 VARCHAR(255),
+    address_line2 VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(100),
+    postal_code VARCHAR(20),
+    country VARCHAR(100),
+
+    -- Time & Locale
+    timezone VARCHAR(100) DEFAULT 'Asia/Kolkata',
+    currency VARCHAR(10) DEFAULT 'INR',
+    date_format VARCHAR(30) DEFAULT 'DD-MM-YYYY',
+
+    -- Subscription
+    subscription_plan VARCHAR(50) DEFAULT 'FREE',
+    subscription_start TIMESTAMP,
+    subscription_end TIMESTAMP,
+
+    max_users INTEGER DEFAULT 10,
+    max_assets INTEGER DEFAULT 500,
+
+    -- Status
+    is_active BOOLEAN DEFAULT TRUE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
+
+    -- Audit
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+
+    created_by UUID,
+    updated_by UUID
+);
