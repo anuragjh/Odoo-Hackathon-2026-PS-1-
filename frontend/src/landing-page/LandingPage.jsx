@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Menu, X } from 'lucide-react';
 import { BackgroundRippleEffect } from '../components/ui/BackgroundRippleEffect';
 import { SparklesCore } from '../components/ui/Sparkles';
 import './LandingPage.css';
@@ -59,6 +60,7 @@ const STATS = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const rootRef    = useRef(null);
   const heroRef    = useRef(null);
   const tagRef     = useRef(null);
@@ -147,6 +149,7 @@ export default function LandingPage() {
         gsap.from(featRef.current.querySelectorAll('.lp-feat-card'), {
           scrollTrigger: { trigger: featRef.current, start: 'top 80%' },
           y: 50, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out',
+          clearProps: "all"
         });
       }
 
@@ -155,6 +158,7 @@ export default function LandingPage() {
         gsap.from(ctaSectRef.current.querySelectorAll('.lp-anim'), {
           scrollTrigger: { trigger: ctaSectRef.current, start: 'top 75%' },
           y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+          clearProps: "all"
         });
       }
     }, rootRef);
@@ -189,11 +193,10 @@ export default function LandingPage() {
       <div className="lp-cursor-dot"  ref={cursorDot} />
 
       {/* ── Nav ───────────────────────────────────────────────────────────── */}
-      <nav className="lp-nav" ref={navRef}>
+      <nav className={`lp-nav${isMobileMenuOpen ? ' lp-nav-mobile-open' : ''}`} ref={navRef}>
         <div className="lp-nav-inner">
-          <div className="lp-logo">
-            <div className="lp-logo-mark"><Ico path={ICONS.box} size={16} /></div>
-            <span>AssetFlow</span>
+          <div className="lp-logo montenegrin-gothic-one-regular" style={{ fontSize: '1.2rem', color: '#fff' }}>
+            AssetFlow
           </div>
           <div className="lp-nav-links">
             <a href="#features">Features</a>
@@ -202,6 +205,31 @@ export default function LandingPage() {
           <button className="lp-nav-cta" onClick={() => navigate('/get-started')}>
             Launch App <Ico path={ICONS.arrow} size={14} />
           </button>
+          
+          <button 
+            className="lp-hamburger" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {/* Mobile navigation menu overlay */}
+        <div className={`lp-mobile-drawer${isMobileMenuOpen ? ' open' : ''}`}>
+          <div className="lp-mobile-drawer-links">
+            <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>Features</a>
+            <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
+            <button 
+              className="lp-mobile-drawer-cta" 
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                navigate('/get-started');
+              }}
+            >
+              Launch App <Ico path={ICONS.arrow} size={14} />
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -252,9 +280,8 @@ export default function LandingPage() {
             <div className="lp-mockup-body">
               {/* Collapsible Sidebar */}
               <div className="lp-mockup-sidebar">
-                <div className="lp-sidebar-brand">
-                  <div className="lp-brand-icon"><Ico path={ICONS.box} size={13} /></div>
-                  <span>AssetFlow</span>
+                <div className="lp-sidebar-brand montenegrin-gothic-one-regular" style={{ fontSize: '1rem', color: '#fff' }}>
+                  AssetFlow
                 </div>
                 <nav className="lp-sidebar-nav">
                   <div className="lp-side-item active">

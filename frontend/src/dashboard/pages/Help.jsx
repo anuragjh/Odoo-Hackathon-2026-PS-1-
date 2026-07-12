@@ -28,7 +28,7 @@ function Help() {
   };
 
   return (
-    <div className="space-y-6 animate-slide-in-up">
+    <div className="af-page space-y-6 animate-slide-in-up">
       {/* Title */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Support & Help Guides</h1>
@@ -72,8 +72,8 @@ function Help() {
           {faqs.map((faq, index) => {
             const isOpen = openFaqIndex === index;
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="overflow-hidden text-xs"
                 style={{
                   background: 'var(--bg-elevated)',
@@ -123,7 +123,7 @@ function Help() {
                   </span>
                 </button>
                 {isOpen && (
-                  <div 
+                  <div
                     className="animate-fade-in"
                     style={{
                       padding: '0.75rem 1rem',

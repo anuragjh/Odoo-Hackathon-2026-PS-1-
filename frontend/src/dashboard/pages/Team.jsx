@@ -39,7 +39,7 @@ function Team() {
   });
 
   return (
-    <div className="space-y-6 animate-slide-in-up">
+    <div className="af-page space-y-6 animate-slide-in-up">
       {/* Title */}
       <div className="flex justify-between items-center">
         <div>

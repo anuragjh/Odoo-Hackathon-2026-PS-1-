@@ -1,20 +1,31 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { resendVerification } from '../services/authService';
+import { ROUTES } from '../config/routes';
 import './Auth.css';
 
 export default function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
-  const registered = new URLSearchParams(location.search).get('registered');
+  const { login } = useAuth();
+  const params = new URLSearchParams(location.search);
+  const registered = params.get('registered');
+  const orgCreated = params.get('org_created');
+  const passwordReset = params.get('reset');
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errorCode, setErrorCode] = useState('');
+  const [resendState, setResendState] = useState('idle');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     if (error) setError('');
+    if (errorCode) setErrorCode('');
+    if (resendState !== 'idle') setResendState('idle');
   };
 
   const handleSubmit = async (e) => {
@@ -25,28 +36,27 @@ export default function SignIn() {
     }
     setLoading(true);
     setError('');
+    setErrorCode('');
 
     try {
-      // POST /auth/login
-      const res = await fetch('/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        // Store token / user data as needed
-        localStorage.setItem('af_token', data.data?.token || '');
-        localStorage.setItem('af_user', JSON.stringify(data.data || {}));
-        navigate('/dashboard');
-      } else {
-        setError(data.message || 'Invalid email or password.');
-      }
-    } catch {
-      // dev fallback
-      setError('Unable to reach server. Check your connection.');
+      await login(form.email.trim().toLowerCase(), form.password);
+      const destination = location.state?.from?.pathname || ROUTES.DASHBOARD;
+      navigate(destination, { replace: true });
+    } catch (err) {
+      setError(err.message || 'Invalid email or password.');
+      setErrorCode(err.code || '');
     }
     setLoading(false);
+  };
+
+  const handleResendVerification = async () => {
+    setResendState('sending');
+    try {
+      await resendVerification(form.email.trim().toLowerCase());
+      setResendState('sent');
+    } catch {
+      setResendState('idle');
+    }
   };
 
   return (
@@ -70,13 +80,17 @@ export default function SignIn() {
         </div>
 
         {/* Registered success banner */}
-        {registered && (
+        {(registered || orgCreated || passwordReset) && (
           <div className="auth-success-banner">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <polyline points="9 12 12 15 16 9" />
             </svg>
-            Account created! An administrator must approve your account before you can sign in.
+            {orgCreated
+              ? 'Organization created! Verify the admin email, then sign in.'
+              : passwordReset
+              ? 'Password reset successfully. Please sign in with your new password.'
+              : 'Account created! An administrator must approve your account before you can sign in.'}
           </div>
         )}
 
@@ -114,7 +128,7 @@ export default function SignIn() {
           <div className="auth-field">
             <div className="auth-label-row">
               <label className="auth-label" htmlFor="signin-password">Password</label>
-              <a href="#" className="auth-forgot">Forgot password?</a>
+              <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot">Forgot password?</Link>
             </div>
             <div className="auth-input-wrap">
               <span className="auth-input-icon">
@@ -164,6 +178,28 @@ export default function SignIn() {
               </svg>
               {error}
             </div>
+          )}
+
+          {errorCode === 'EMAIL_NOT_VERIFIED' && (
+            resendState === 'sent' ? (
+              <div className="auth-success-banner">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="9 12 12 15 16 9" />
+                </svg>
+                Verification email sent. Check your inbox.
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="auth-forgot"
+                onClick={handleResendVerification}
+                disabled={resendState === 'sending'}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}
+              >
+                {resendState === 'sending' ? 'Sending verification email…' : 'Resend verification email'}
+              </button>
+            )
           )}
 
           <button type="submit" className="auth-submit" disabled={loading} id="signin-submit-btn">

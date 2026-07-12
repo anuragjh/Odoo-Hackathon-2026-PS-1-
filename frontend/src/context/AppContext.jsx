@@ -1,17 +1,32 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { ROLE_LABELS } from '../config/routes';
 
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  const { user: authUser } = useAuth();
+
   // Theme state — 'dark' | 'light'
   const [theme, setTheme] = useState('dark');
-  
+
   // Current user state
   const [currentUser, setCurrentUser] = useState({
     name: 'Jessin Sam',
     email: 'jessin@gmail.com',
     role: 'Employee' // Roles: Admin, Asset Manager, Department Head, Employee
   });
+
+  useEffect(() => {
+    if (authUser) {
+      setCurrentUser({
+        id: authUser.id,
+        name: authUser.fullName || authUser.name || 'User',
+        email: authUser.email || '',
+        role: ROLE_LABELS[authUser.role] || authUser.role || 'Employee',
+      });
+    }
+  }, [authUser]);
 
   // Employee Directory
   const [employees, setEmployees] = useState([

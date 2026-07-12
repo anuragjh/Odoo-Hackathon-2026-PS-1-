@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signup } from '../services/authService';
 import './Auth.css';
 
 export default function SignUp() {
@@ -47,6 +48,8 @@ export default function SignUp() {
       e.phone = 'Enter a valid phone number';
     if (form.password.length < 8)
       e.password = 'Password must be at least 8 characters';
+    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/.test(form.password))
+      e.password = 'Include an uppercase, lowercase, number and special character';
     if (form.password !== form.confirmPassword)
       e.confirmPassword = 'Passwords do not match';
     setErrors(e);
@@ -68,20 +71,15 @@ export default function SignUp() {
     };
 
     try {
-      // POST /auth/signup
-      const res = await fetch('/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate('/signin?registered=1');
+      await signup(payload);
+      navigate('/signin?registered=1');
+    } catch (err) {
+      if (err.fieldErrors) {
+        setErrors(err.fieldErrors);
+        setSubmitError('Please correct the highlighted fields.');
       } else {
-        setSubmitError(data.message || 'Something went wrong. Please try again.');
+        setSubmitError(err.message || 'Something went wrong. Please try again.');
       }
-    } catch {
-      setSubmitError('Unable to reach server. Check your connection.');
     }
     setLoading(false);
   };

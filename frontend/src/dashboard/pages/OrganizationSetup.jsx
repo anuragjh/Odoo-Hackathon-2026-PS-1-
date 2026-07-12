@@ -463,7 +463,7 @@ function OrganizationSetup() {
                   placeholder="e.g. priya@company.com"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[0.875rem]">
                 <div>
                   <FormLabel>System Role</FormLabel>
                   <FormSelect value={newEmp.role} onChange={e => setNewEmp({ ...newEmp, role: e.target.value })}>

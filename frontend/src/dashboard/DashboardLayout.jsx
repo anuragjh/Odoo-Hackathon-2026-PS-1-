@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
 import Modal from '../components/ui/Modal';
 import {
@@ -18,6 +19,8 @@ import {
   Building2,
   Bell,
   ChevronDown,
+  Menu,
+  X,
 } from 'lucide-react';
 
 /* ── Navigation Structure (mirrors blueprint) ────────────────── */
@@ -25,23 +28,23 @@ const NAV_GROUPS = [
   {
     label: 'Main',
     items: [
-      { name: 'Dashboard',    path: '/dashboard',              icon: LayoutGrid },
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutGrid },
     ],
   },
   {
     label: 'Asset Management',
     items: [
-      { name: 'Assets',             path: '/dashboard/assets',        icon: Boxes },
+      { name: 'Assets', path: '/dashboard/assets', icon: Boxes },
       { name: 'Allocation & Transfer', path: '/dashboard/allocations', icon: FolderTree },
-      { name: 'Resource Booking',   path: '/dashboard/bookings',      icon: CalendarDays },
-      { name: 'Maintenance',        path: '/dashboard/maintenance',   icon: Wrench },
+      { name: 'Resource Booking', path: '/dashboard/bookings', icon: CalendarDays },
+      { name: 'Maintenance', path: '/dashboard/maintenance', icon: Wrench },
     ],
   },
   {
     label: 'Reporting',
     items: [
-      { name: 'Audit',       path: '/dashboard/audits',    icon: FileCheck },
-      { name: 'Reports',     path: '/dashboard/analytics', icon: BarChart3 },
+      { name: 'Audit', path: '/dashboard/audits', icon: FileCheck },
+      { name: 'Reports', path: '/dashboard/analytics', icon: BarChart3 },
       { name: 'Notifications', path: '/dashboard/notifications', icon: Bell },
     ],
   },
@@ -49,9 +52,9 @@ const NAV_GROUPS = [
     label: 'Admin',
     items: [
       { name: 'Organisation Setup', path: '/dashboard/organization', icon: Building2 },
-      { name: 'Team',               path: '/dashboard/team',         icon: Users },
-      { name: 'Settings',           path: '/dashboard/settings',     icon: SettingsIcon },
-      { name: 'Help',               path: '/dashboard/help',         icon: HelpCircle },
+      { name: 'Team', path: '/dashboard/team', icon: Users },
+      { name: 'Settings', path: '/dashboard/settings', icon: SettingsIcon },
+      { name: 'Help', path: '/dashboard/help', icon: HelpCircle },
     ],
   },
 ];
@@ -70,10 +73,18 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, notificationCount } = useContext(AppContext);
+  const { logout } = useAuth();
   const [notifOpen, setNotifOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleLogout = () => navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate('/');
+    }
+  };
 
   const isActive = (path) => {
     if (path === '/dashboard') return location.pathname === '/dashboard';
@@ -92,15 +103,19 @@ export default function DashboardLayout() {
       }}
     >
       {/* ── SIDEBAR ───────────────────────────────────────────── */}
-      <aside className="af-sidebar">
+      <aside className={`af-sidebar${isSidebarOpen ? ' open' : ''}`}>
         {/* Logo */}
-        <div className="af-sidebar-logo">
-          <div className="af-sidebar-logo-mark">
-            <Boxes size={16} color="#fff" />
-          </div>
-          <span className="af-sidebar-logo-text">
-            Asset<span style={{ color: 'var(--accent)' }}>Flow</span>
+        <div className="af-sidebar-logo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <span className="montenegrin-gothic-one-regular" style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>
+            AssetFlow
           </span>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="af-sidebar-close-btn"
+            aria-label="Close Sidebar"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -116,6 +131,7 @@ export default function DashboardLayout() {
                     key={item.path}
                     to={item.path}
                     className={`af-nav-item${active ? ' active' : ''}`}
+                    onClick={() => setIsSidebarOpen(false)}
                   >
                     <Icon size={15} />
                     <span>{item.name}</span>
@@ -250,6 +266,13 @@ export default function DashboardLayout() {
         <header className="af-header" style={{ position: 'relative', zIndex: 1, backdropFilter: 'blur(10px)', background: 'rgba(24, 24, 27, 0.4)', borderBottom: '1px solid var(--border-default)' }}>
           {/* Left — breadcrumb / page indicator */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="af-hamburger-btn"
+              aria-label="Open Sidebar"
+            >
+              <Menu size={18} />
+            </button>
             <span
               style={{
                 fontSize: '0.6875rem',
@@ -396,6 +419,14 @@ export default function DashboardLayout() {
           </div>
         </div>
       </Modal>
+
+      {/* Sidebar backdrop overlay for mobile/tablet */}
+      {isSidebarOpen && (
+        <div
+          className="af-sidebar-backdrop"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

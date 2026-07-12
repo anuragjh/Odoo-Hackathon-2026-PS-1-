@@ -42,7 +42,7 @@ function Analytics() {
   ];
 
   return (
-    <div className="space-y-6 animate-slide-in-up">
+    <div className="af-page space-y-6 animate-slide-in-up">
       {/* Title */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Reports & Analytics</h1>
