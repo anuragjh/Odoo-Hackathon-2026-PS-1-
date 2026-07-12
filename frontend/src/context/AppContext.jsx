@@ -3,8 +3,8 @@ import React, { createContext, useState, useEffect } from 'react';
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  // Theme state
-  const [theme, setTheme] = useState('light');
+  // Theme state — 'dark' | 'light'
+  const [theme, setTheme] = useState('dark');
   
   // Current user state
   const [currentUser, setCurrentUser] = useState({
@@ -244,9 +244,11 @@ export const AppProvider = ({ children }) => {
     { id: 3, title: 'Maintenance Ticket Assigned', message: 'Dell PowerEdge R750 (AF-0002) has been assigned to Isaac.', time: '1 day ago', read: true }
   ]);
 
-  // Track Theme changes in DOM class
+  // Track Theme changes via data-theme attribute (drives CSS variable system)
   useEffect(() => {
     const root = window.document.documentElement;
+    root.setAttribute('data-theme', theme);
+    // Also keep Tailwind dark class in sync for any legacy Tailwind dark: variants
     if (theme === 'dark') {
       root.classList.add('dark');
     } else {
@@ -595,6 +597,9 @@ export const AppProvider = ({ children }) => {
     return { success: true };
   };
 
+  // Derived notification count
+  const notificationCount = notifications.filter(n => !n.read).length;
+
   return (
     <AppContext.Provider value={{
       theme,
@@ -619,7 +624,9 @@ export const AppProvider = ({ children }) => {
       setAudits,
       notifications,
       setNotifications,
-      
+      notificationCount,
+      addNotification,
+
       // Core ERP logic functions
       registerAsset,
       allocateAsset,

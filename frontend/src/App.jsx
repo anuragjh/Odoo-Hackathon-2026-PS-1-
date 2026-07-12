@@ -2,6 +2,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import LandingPage from './landing-page/LandingPage';
+import SignIn from './auth/SignIn';
+import SignUp from './auth/SignUp';
+import AuthGateway from './auth/AuthGateway';
+import OrgSignUp from './auth/OrgSignUp';
 import DashboardLayout from './dashboard/DashboardLayout';
 import DashboardOverview from './dashboard/pages/DashboardOverview';
 import AssetsDirectory from './dashboard/pages/AssetsDirectory';
@@ -17,6 +21,7 @@ import OrganizationSetup from './dashboard/pages/OrganizationSetup';
 import Settings from './dashboard/pages/Settings';
 import Help from './dashboard/pages/Help';
 import Logout from './dashboard/pages/Logout';
+import Notifications from './dashboard/pages/Notifications';
 
 function App() {
   return (
@@ -25,6 +30,12 @@ function App() {
         <Routes>
           {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Auth Pages */}
+          <Route path="/get-started" element={<AuthGateway />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/org/register" element={<OrgSignUp />} />
 
           {/* Dashboard Route Group */}
           <Route path="/dashboard" element={<DashboardLayout />}>
@@ -42,6 +53,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="help" element={<Help />} />
             <Route path="logout" element={<Logout />} />
+            <Route path="notifications" element={<Notifications />} />
           </Route>
 
           {/* Catch-all Redirect */}

@@ -197,7 +197,7 @@ export default function LandingPage() {
             <a href="#features">Features</a>
             <a href="#about">About</a>
           </div>
-          <button className="lp-nav-cta" onClick={() => navigate('/dashboard')}>
+          <button className="lp-nav-cta" onClick={() => navigate('/get-started')}>
             Launch App <Ico path={ICONS.arrow} size={14} />
           </button>
         </div>
@@ -227,7 +227,7 @@ export default function LandingPage() {
               className="lp-btn-primary"
               onMouseMove={magMove}
               onMouseLeave={magLeave}
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/get-started')}
             >
               Open Dashboard <Ico path={ICONS.arrow} size={16} />
             </button>
