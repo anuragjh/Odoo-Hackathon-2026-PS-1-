@@ -142,15 +142,15 @@ function Maintenance() {
         {/* Tickets Board */}
         <div className="lg:col-span-2 space-y-4">
           {/* Tabs */}
-          <div className="flex border-b border-border text-xs font-medium">
+          <div className="flex gap-2 text-xs font-medium">
             {['All', 'Pending', 'Active', 'Resolved'].map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 border-b-2 transition-all ${
+                className={`px-3.5 py-1.5 rounded-lg border transition-all ${
                   activeTab === tab 
-                    ? 'border-primary text-primary font-bold' 
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground border-primary font-bold shadow-sm' 
+                    : 'border-border text-muted-foreground hover:bg-secondary hover:text-foreground'
                 }`}
               >
                 {tab} Tickets

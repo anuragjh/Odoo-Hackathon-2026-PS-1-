@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import ThemeToggle from '../components/ThemeToggle';
+import Modal from '../components/ui/Modal';
 import {
   LayoutGrid,
   Boxes,
@@ -70,6 +71,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const { currentUser, notificationCount } = useContext(AppContext);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => navigate('/');
 
@@ -145,17 +147,22 @@ export default function DashboardLayout() {
           style={{
             borderTop: '1px solid var(--border-subtle)',
             padding: '0.75rem 0.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.5rem',
           }}
         >
-          {/* User row */}
+          {/* User Details */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.6rem',
-              padding: '0.5rem 0.625rem',
+              padding: '0.5rem 0.25rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2px',
+              flex: 1,
+              minWidth: 0,
             }}
           >
             <div
@@ -195,16 +202,28 @@ export default function DashboardLayout() {
             </div>
           </div>
 
-          {/* Logout */}
+          {/* Logout (Icon Only) */}
           <button
-            onClick={handleLogout}
-            className="af-nav-item"
-            style={{ color: 'var(--text-muted)', width: '100%' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'var(--danger-bg)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+            onClick={() => setShowLogoutConfirm(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              borderRadius: 'var(--radius)',
+              background: 'transparent',
+              border: '1px solid transparent',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              flexShrink: 0,
+              transition: 'all 0.15s ease',
+            }}
+            title="Logout"
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'var(--danger-bg)'; e.currentTarget.style.borderColor = 'var(--danger-border)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
           >
-            <LogOut size={15} />
-            <span>Logout</span>
+            <LogOut size={16} />
           </button>
         </div>
       </aside>
@@ -218,10 +237,17 @@ export default function DashboardLayout() {
           overflow: 'hidden',
           backgroundColor: 'var(--bg-base)',
           minWidth: 0,
+          position: 'relative',
         }}
       >
+        {/* Animated Mesh Gradients Behind Content */}
+        <div className="af-bg-glow-container">
+          <div className="af-bg-glow af-bg-glow-1"></div>
+          <div className="af-bg-glow af-bg-glow-2"></div>
+        </div>
+
         {/* Top Header */}
-        <header className="af-header">
+        <header className="af-header" style={{ position: 'relative', zIndex: 1, backdropFilter: 'blur(10px)', background: 'rgba(24, 24, 27, 0.4)', borderBottom: '1px solid var(--border-default)' }}>
           {/* Left — breadcrumb / page indicator */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span
@@ -329,12 +355,47 @@ export default function DashboardLayout() {
           style={{
             flex: 1,
             overflowY: 'auto',
-            backgroundColor: 'var(--bg-base)',
+            backgroundColor: 'transparent',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <Outlet />
         </div>
       </main>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        open={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        title="Confirm Sign Out"
+        maxWidth="380px"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+            Are you sure you want to log out of your AssetFlow workspace? You will need to sign in again to access your dashboard.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+            <button
+              onClick={() => setShowLogoutConfirm(false)}
+              className="af-btn af-btn-secondary neu-btn"
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.8125rem' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                setShowLogoutConfirm(false);
+                handleLogout();
+              }}
+              className="af-btn af-btn-danger neu-btn"
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.8125rem' }}
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

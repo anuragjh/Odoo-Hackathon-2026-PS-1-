@@ -95,7 +95,7 @@ function ResourceBookings() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Bookings Form */}
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm h-fit">
+        <div className="glass-card af-card hover-lift p-5 h-fit">
           <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-1.5">
             <Plus className="w-4 h-4 text-primary" />
             <span>Create Booking Slot</span>
@@ -157,7 +157,7 @@ function ResourceBookings() {
 
             <button 
               type="submit"
-              className="w-full bg-primary text-primary-foreground font-semibold py-2 rounded-lg text-xs hover:bg-primary/95 transition-all shadow-md shadow-primary/10"
+              className="w-full bg-primary text-primary-foreground font-semibold py-2 rounded-lg text-xs hover:bg-primary/95 transition-all shadow-md neu-btn-primary"
             >
               Reserve Time Slot
             </button>
@@ -166,7 +166,7 @@ function ResourceBookings() {
 
         {/* Existing Bookings Log */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+          <div className="glass-card af-card hover-lift p-5">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <h2 className="text-sm font-bold text-foreground flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-primary" />
@@ -193,7 +193,7 @@ function ResourceBookings() {
                 filteredAssetsBookings(filteredBookings).map((book) => (
                   <div 
                     key={book.id} 
-                    className={`p-4 rounded-xl border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${
+                    className={`p-4 rounded-xl border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:scale-[1.01] transition-all hover:border-primary/25 ${
                       book.status === 'Cancelled' ? 'bg-secondary/20 opacity-60 border-dashed' : 'bg-secondary/30'
                     }`}
                   >
@@ -225,7 +225,7 @@ function ResourceBookings() {
                     {(book.status === 'Upcoming' || book.status === 'Ongoing') && (
                       <button 
                         onClick={() => handleCancelBooking(book.id, book.assetId)}
-                        className="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-lg text-[10px] font-bold flex items-center gap-1 self-end sm:self-center"
+                        className="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-lg text-[10px] font-bold flex items-center gap-1 self-end sm:self-center neu-btn"
                         title="Cancel Slot Reservation"
                       >
                         <Trash2 className="w-3 h-3" />

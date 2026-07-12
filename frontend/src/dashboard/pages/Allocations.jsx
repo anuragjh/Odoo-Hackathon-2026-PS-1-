@@ -126,8 +126,8 @@ function Allocations() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Allocate Form */}
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm h-fit">
-          <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-1">
+        <div className="glass-card af-card hover-lift p-5 h-fit">
+          <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-1.5">
             <UserPlus className="w-4 h-4 text-primary" />
             <span>New Allocation</span>
           </h2>
@@ -178,9 +178,9 @@ function Allocations() {
 
             {/* Conflict Error Block */}
             {conflictError && (
-              <div className="p-3.5 rounded-xl border bg-rose-50 border-rose-200 text-rose-900 dark:bg-rose-950/20 dark:border-rose-900/30 dark:text-rose-400 space-y-2 text-xs">
+              <div className="p-3.5 rounded-xl clay-alert-danger space-y-2 text-xs">
                 <div className="flex items-start gap-1.5 font-semibold">
-                  <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-white" />
                   <span>{conflictError.message}</span>
                 </div>
                 {conflictError.conflict && (
@@ -189,7 +189,7 @@ function Allocations() {
                     <button 
                       type="button" 
                       onClick={handleRequestTransfer}
-                      className="w-full inline-flex items-center justify-center gap-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-1.5 rounded-lg text-[10px] transition-colors"
+                      className="w-full inline-flex items-center justify-center gap-1 bg-white/20 hover:bg-white/35 text-white font-bold py-1.5 rounded-lg text-[10px] transition-colors border border-white/10"
                     >
                       <ArrowLeftRight className="w-3.5 h-3.5" />
                       <span>Request Transfer</span>
@@ -201,7 +201,7 @@ function Allocations() {
 
             <button 
               type="submit"
-              className="w-full bg-primary text-primary-foreground font-semibold py-2 rounded-lg text-xs hover:bg-primary/95 transition-all shadow-md shadow-primary/10"
+              className="w-full bg-primary text-primary-foreground font-semibold py-2 rounded-lg text-xs hover:bg-primary/95 transition-all shadow-md neu-btn-primary"
             >
               Confirm Assignment
             </button>
@@ -213,24 +213,24 @@ function Allocations() {
           
           {/* Overdue returns banner alerts */}
           {overdueAllocations.length > 0 && (
-            <div className="bg-rose-50 border border-rose-200 dark:bg-rose-950/10 dark:border-rose-900/20 rounded-2xl p-5 shadow-sm space-y-3">
-              <h2 className="text-sm font-bold text-rose-800 dark:text-rose-400 flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 animate-pulse" />
+            <div className="clay-alert-danger p-5 space-y-3">
+              <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
+                <ShieldAlert className="w-4 h-4 text-white animate-pulse" />
                 <span>Overdue Asset Handback Required</span>
               </h2>
               <div className="space-y-2">
                 {overdueAllocations.map(asset => (
                   <div 
                     key={asset.id} 
-                    className="flex justify-between items-center bg-card border border-rose-100 dark:border-rose-950 p-3 rounded-xl text-xs"
+                    className="flex justify-between items-center bg-black/15 dark:bg-black/25 border border-white/10 p-3 rounded-xl text-xs"
                   >
                     <div>
-                      <span className="font-semibold text-foreground">{asset.name}</span>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Holder: {asset.holder} &bull; Expected Return: <span className="font-semibold text-rose-600">{asset.expectedReturn}</span></p>
+                      <span className="font-semibold text-white">{asset.name}</span>
+                      <p className="text-[10px] text-white/80 mt-0.5">Holder: {asset.holder} &bull; Expected Return: <span className="font-bold text-white underline">{asset.expectedReturn}</span></p>
                     </div>
                     <button 
                       onClick={() => openReturnModal(asset)}
-                      className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-[10px] flex items-center gap-1"
+                      className="px-2.5 py-1 bg-white/25 hover:bg-white/40 text-white font-bold rounded-lg text-[10px] flex items-center gap-1 border border-white/10"
                     >
                       <RotateCcw className="w-3 h-3" />
                       <span>Return</span>
@@ -242,7 +242,7 @@ function Allocations() {
           )}
 
           {/* Active Allocations List */}
-          <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+          <div className="glass-card af-card hover-lift p-5">
             <h2 className="text-sm font-bold text-foreground mb-4">Active Staff Allocations</h2>
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
               {allocatedAssets.length === 0 ? (
@@ -251,7 +251,7 @@ function Allocations() {
                 allocatedAssets.map(asset => (
                   <div 
                     key={asset.id} 
-                    className="flex items-center justify-between p-3 rounded-xl border border-border hover:bg-secondary/40 transition-all text-xs"
+                    className="flex items-center justify-between p-3 rounded-xl border border-border hover:bg-secondary/40 hover:scale-[1.01] hover:border-primary/30 transition-all text-xs"
                   >
                     <div>
                       <div className="flex items-center gap-2">
@@ -263,7 +263,7 @@ function Allocations() {
                     
                     <button 
                       onClick={() => openReturnModal(asset)}
-                      className="px-3 py-1.5 border hover:bg-secondary rounded-lg font-semibold text-[10px]"
+                      className="px-3 py-1.5 border hover:bg-secondary rounded-lg font-semibold text-[10px] neu-btn"
                     >
                       Process Return
                     </button>
@@ -274,7 +274,7 @@ function Allocations() {
           </div>
 
           {/* Pending Transfer Requests */}
-          <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+          <div className="glass-card af-card hover-lift p-5">
             <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-1.5">
               <ArrowLeftRight className="w-4 h-4 text-primary" />
               <span>Pending Transfer Requests</span>
@@ -286,7 +286,7 @@ function Allocations() {
                 transfers.map(trans => (
                   <div 
                     key={trans.id} 
-                    className="p-4 rounded-xl border bg-secondary/30 border-border space-y-2 text-xs"
+                    className="p-4 rounded-xl border bg-secondary/30 border-border space-y-2 text-xs hover:scale-[1.01] transition-all hover:border-primary/20"
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-foreground">{trans.assetName}</span>
@@ -309,7 +309,7 @@ function Allocations() {
                       <div className="pt-2 flex justify-end gap-2">
                         <button 
                           onClick={() => handleApproveTransfer(trans.id)}
-                          className="px-3 py-1.5 bg-primary text-primary-foreground font-semibold rounded-lg text-[10px]"
+                          className="px-3 py-1.5 bg-primary text-primary-foreground font-semibold rounded-lg text-[10px] neu-btn-primary"
                         >
                           Approve Transfer
                         </button>

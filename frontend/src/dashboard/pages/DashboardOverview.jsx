@@ -175,33 +175,33 @@ function DashboardOverview() {
       )}
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.875rem' }}>
-        <div className="af-stat-card">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.75rem' }}>
+        <div className="af-stat-card glass-card hover-lift stat-card-glow-success">
           <span className="af-stat-label">Available</span>
           <span className="af-stat-value">{availableCount}</span>
           <Badge variant="success">Ready</Badge>
         </div>
-        <div className="af-stat-card">
+        <div className="af-stat-card glass-card hover-lift stat-card-glow-info">
           <span className="af-stat-label">Allocated</span>
           <span className="af-stat-value">{allocatedCount}</span>
           <Badge variant="info">Active</Badge>
         </div>
-        <div className="af-stat-card">
+        <div className="af-stat-card glass-card hover-lift stat-card-glow-danger">
           <span className="af-stat-label">In Maintenance</span>
           <span className="af-stat-value">{maintenanceCount}</span>
           <Badge variant="warning">In Depot</Badge>
         </div>
-        <div className="af-stat-card">
+        <div className="af-stat-card glass-card hover-lift stat-card-glow-info">
           <span className="af-stat-label">Active Bookings</span>
           <span className="af-stat-value">{activeBookingsCount}</span>
           <Badge variant="info">Scheduled</Badge>
         </div>
-        <div className="af-stat-card">
+        <div className="af-stat-card glass-card hover-lift stat-card-glow-warning">
           <span className="af-stat-label">Pending Transfers</span>
           <span className="af-stat-value">{pendingTransfersCount}</span>
           <Badge variant="warning">Review</Badge>
         </div>
-        <div className="af-stat-card">
+        <div className="af-stat-card glass-card hover-lift stat-card-glow-info">
           <span className="af-stat-label">Allocation Rate</span>
           <span className="af-stat-value">{allocationRate}%</span>
           <Badge variant="neutral">Total {totalAssets}</Badge>
@@ -210,17 +210,17 @@ function DashboardOverview() {
 
       {/* Quick Action Buttons */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.625rem' }}>
-        <button className="af-btn af-btn-primary" style={{ flex: 1, justifyContent: 'center', minWidth: '140px' }} onClick={() => setRegisterModal(true)}>
+        <button className="af-btn af-btn-primary neu-btn-primary" style={{ flex: 1, justifyContent: 'center', minWidth: '140px' }} onClick={() => setRegisterModal(true)}>
           <FolderPlus size={14} />
           Register Asset
         </button>
-        <button className="af-btn af-btn-secondary" style={{ flex: 1, justifyContent: 'center', minWidth: '140px' }} onClick={() => setBookingModal(true)}>
+        <button className="af-btn af-btn-secondary neu-btn" style={{ flex: 1, justifyContent: 'center', minWidth: '140px' }} onClick={() => setBookingModal(true)}>
           <CalendarPlus size={14} />
           Book Resource
         </button>
         <button
-          className="af-btn af-btn-secondary"
-          style={{ flex: 1, justifyContent: 'center', minWidth: '140px', color: 'var(--danger)', borderColor: 'var(--danger-border)' }}
+          className="af-btn af-btn-danger neu-btn"
+          style={{ flex: 1, justifyContent: 'center', minWidth: '140px' }}
           onClick={() => setMaintenanceModal(true)}
         >
           <Hammer size={14} />
@@ -372,7 +372,7 @@ function DashboardOverview() {
             Shared resource (bookable by time slots)
           </label>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-            <button type="button" className="af-btn af-btn-secondary" onClick={() => setRegisterModal(false)}>Cancel</button>
+            <button type="button" className="af-btn af-btn-secondary" onClick={() => setRegisterModal(false)} style={{ background: 'var(--bg-secondary)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)', transition: 'all 0.15s ease' }} onMouseEnter={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = 'var(--text-primary)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-secondary)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>Cancel</button>
             <button type="submit" className="af-btn af-btn-primary">Register Asset</button>
           </div>
         </form>

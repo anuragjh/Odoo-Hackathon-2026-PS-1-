@@ -82,8 +82,9 @@ function Settings() {
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${
                 activeSettingsTab === 'Notifications' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
               }`}
+              style={{ whiteSpace: 'nowrap' }}
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-4 h-4" style={{ flexShrink: 0 }} />
               <span>Notification Alerts</span>
             </button>
 
@@ -92,8 +93,9 @@ function Settings() {
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${
                 activeSettingsTab === 'Promotion' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
               }`}
+              style={{ whiteSpace: 'nowrap' }}
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-4 h-4" style={{ flexShrink: 0 }} />
               <span>Elevations Directory</span>
             </button>
           </nav>

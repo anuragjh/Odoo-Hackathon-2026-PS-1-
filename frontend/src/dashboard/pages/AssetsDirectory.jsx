@@ -127,7 +127,8 @@ function AssetsDirectory() {
             placeholder="Search by tag, serial, or API code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 bg-card text-xs font-semibold"
+            className="w-full pr-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 bg-card text-xs font-semibold"
+            style={{ paddingLeft: '2.5rem' }}
           />
         </div>
         
