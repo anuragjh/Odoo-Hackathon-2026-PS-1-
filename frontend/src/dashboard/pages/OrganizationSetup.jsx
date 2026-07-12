@@ -1,498 +1,494 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
-import { Building2, Tag, Users, Plus, Check, X, Shield, ShieldAlert, Sparkles } from 'lucide-react';
+import PageHeader from '../../components/ui/PageHeader';
+import Badge from '../../components/ui/Badge';
+import Alert from '../../components/ui/Alert';
+import { Building2, Tag, Users, Plus, Trash2, Shield } from 'lucide-react';
+
+/* ── Tabs config ──────────────────────────────────────────────── */
+const TABS = [
+  { id: 'departments', label: 'Departments', icon: Building2 },
+  { id: 'categories',  label: 'Categories',  icon: Tag },
+  { id: 'employees',   label: 'Employees',   icon: Users },
+];
+
+/* ── Role badge variant map ───────────────────────────────────── */
+const ROLE_VARIANT = {
+  'Admin':           'danger',
+  'Asset Manager':   'info',
+  'Department Head': 'warning',
+  'Employee':        'neutral',
+};
 
 function OrganizationSetup() {
-  const { 
-    employees, setEmployees, 
-    departments, setDepartments, 
-    categories, setCategories 
+  const {
+    employees, setEmployees,
+    departments, setDepartments,
+    categories, setCategories,
   } = useContext(AppContext);
 
-  // Selected tab: 'departments' | 'categories' | 'employees' | 'add'
   const [activeTab, setActiveTab] = useState('departments');
+  const [addType, setAddType]     = useState('department');
+  const [showAddPanel, setShowAddPanel] = useState(false);
 
-  // Addition Form States
-  const [addType, setAddType] = useState('department'); // department | category | employee
-
-  // Add Department State
+  // Form states
   const [newDept, setNewDept] = useState({ name: '', head: '', parent: 'None' });
+  const [newCat,  setNewCat]  = useState({ name: '', customFields: '' });
+  const [newEmp,  setNewEmp]  = useState({ name: '', email: '', role: 'Employee', department: '' });
 
-  // Add Category State
-  const [newCat, setNewCat] = useState({ name: '', customFields: '' });
-
-  // Add Employee State
-  const [newEmp, setNewEmp] = useState({ name: '', email: '', role: 'Employee', department: '' });
-
-  // Success / Error Alerts
   const [alert, setAlert] = useState(null);
 
-  // Toggle active/inactive status
+  /* ── Helpers ─────────────────────────────────────────────────── */
+  const triggerAlert = (type, message) => {
+    setAlert({ type, message });
+    setTimeout(() => setAlert(null), 3500);
+  };
+
   const toggleDeptStatus = (id) => {
-    setDepartments(departments.map(d => {
-      if (d.id === id) {
-        return { ...d, status: d.status === 'Active' ? 'Inactive' : 'Active' };
-      }
-      return d;
-    }));
+    setDepartments(departments.map(d =>
+      d.id === id ? { ...d, status: d.status === 'Active' ? 'Inactive' : 'Active' } : d
+    ));
     triggerAlert('success', 'Department status updated.');
   };
 
   const toggleEmpStatus = (id) => {
-    setEmployees(employees.map(e => {
-      if (e.id === id) {
-        return { ...e, status: e.status === 'Active' ? 'Inactive' : 'Active' };
-      }
-      return e;
-    }));
+    setEmployees(employees.map(e =>
+      e.id === id ? { ...e, status: e.status === 'Active' ? 'Inactive' : 'Active' } : e
+    ));
     triggerAlert('success', 'Employee status updated.');
   };
 
-  // Trigger helper
-  const triggerAlert = (type, message) => {
-    setAlert({ type, message });
-    setTimeout(() => setAlert(null), 3000);
-  };
-
-  // Add Submission handlers
+  /* ── Add Handlers ─────────────────────────────────────────────── */
   const handleAddDept = (e) => {
     e.preventDefault();
     if (!newDept.name || !newDept.head) {
-      triggerAlert('error', 'Department Name and Head of Dept are required.');
+      triggerAlert('danger', 'Department Name and Head of Department are required.');
       return;
     }
     const nextId = departments.length ? Math.max(...departments.map(d => d.id)) + 1 : 1;
-    setDepartments([...departments, {
-      id: nextId,
-      name: newDept.name,
-      head: newDept.head,
-      parent: newDept.parent,
-      status: 'Active'
-    }]);
+    setDepartments([...departments, { id: nextId, ...newDept, status: 'Active' }]);
     setNewDept({ name: '', head: '', parent: 'None' });
     triggerAlert('success', 'New Department added successfully!');
+    setShowAddPanel(false);
     setActiveTab('departments');
   };
 
   const handleAddCat = (e) => {
     e.preventDefault();
     if (!newCat.name || !newCat.customFields) {
-      triggerAlert('error', 'Category Name and Custom Fields are required.');
+      triggerAlert('danger', 'Category Name and Custom Fields are required.');
       return;
     }
     const nextId = categories.length ? Math.max(...categories.map(c => c.id)) + 1 : 1;
-    setCategories([...categories, {
-      id: nextId,
-      name: newCat.name,
-      customFields: newCat.customFields
-    }]);
+    setCategories([...categories, { id: nextId, ...newCat }]);
     setNewCat({ name: '', customFields: '' });
-    triggerAlert('success', 'New Category added successfully!');
+    triggerAlert('success', 'Category schema added successfully!');
+    setShowAddPanel(false);
     setActiveTab('categories');
   };
 
   const handleAddEmp = (e) => {
     e.preventDefault();
     if (!newEmp.name || !newEmp.email || !newEmp.department) {
-      triggerAlert('error', 'Employee Name, Email, and Department are required.');
+      triggerAlert('danger', 'Employee Name, Email, and Department are required.');
       return;
     }
     const nextId = employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1;
-    setEmployees([...employees, {
-      id: nextId,
-      name: newEmp.name,
-      email: newEmp.email,
-      role: newEmp.role,
-      department: newEmp.department,
-      status: 'Active'
-    }]);
+    setEmployees([...employees, { id: nextId, ...newEmp, status: 'Active' }]);
     setNewEmp({ name: '', email: '', role: 'Employee', department: '' });
-    triggerAlert('success', 'New Employee added successfully!');
+    triggerAlert('success', 'Employee registered successfully!');
+    setShowAddPanel(false);
     setActiveTab('employees');
   };
 
-  return (
-    <div className="space-y-6 animate-slide-in-up">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">Organization Setup</h1>
-        <p className="text-xs md:text-sm text-muted-foreground mt-0.5">Manage departments, custom category schemas, and employee credentials.</p>
-      </div>
+  /* ── Render helpers ───────────────────────────────────────────── */
+  const FormLabel = ({ children }) => (
+    <label className="af-label">{children}</label>
+  );
 
-      {/* Alert Notices */}
+  const FormInput = (props) => (
+    <input {...props} />
+  );
+
+  const FormSelect = ({ children, ...props }) => (
+    <select {...props}>{children}</select>
+  );
+
+  return (
+    <div className="af-page animate-slide-in-up">
+      {/* Page Header */}
+      <PageHeader
+        title="Organisation Setup"
+        subtitle="Manage departments, asset category schemas, and employee accounts."
+      >
+        <button
+          className="af-btn af-btn-primary"
+          onClick={() => {
+            setShowAddPanel(!showAddPanel);
+            setAddType(activeTab === 'departments' ? 'department' : activeTab === 'categories' ? 'category' : 'employee');
+          }}
+        >
+          <Plus size={14} />
+          Add {activeTab === 'departments' ? 'Department' : activeTab === 'categories' ? 'Category' : 'Employee'}
+        </button>
+      </PageHeader>
+
+      {/* Alert */}
       {alert && (
-        <div className={`p-4 rounded-xl border flex items-center justify-between shadow-sm transition-all duration-300 ${
-          alert.type === 'error' 
-            ? 'bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/20 dark:border-rose-900/30 dark:text-rose-400 font-semibold text-xs' 
-            : 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-400 font-semibold text-xs'
-        }`}>
-          <span>{alert.message}</span>
-          <button onClick={() => setAlert(null)} className="text-[10px] font-bold hover:underline">Dismiss</button>
-        </div>
+        <Alert type={alert.type} message={alert.message} onDismiss={() => setAlert(null)} />
       )}
 
-      {/* Tab Selection Row */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-[#e0e8f6] dark:bg-[#181818] rounded-2xl w-fit">
-        <button
-          onClick={() => setActiveTab('departments')}
-          className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'departments' 
-              ? 'bg-[#f0f4fc] dark:bg-[#202020] text-[#2563eb] shadow-inner' 
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Building2 className="w-4 h-4" />
-          <span>Departments</span>
-        </button>
-        
-        <button
-          onClick={() => setActiveTab('categories')}
-          className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'categories' 
-              ? 'bg-[#f0f4fc] dark:bg-[#202020] text-[#2563eb] shadow-inner' 
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Tag className="w-4 h-4" />
-          <span>Categories</span>
-        </button>
+      {/* Info note */}
+      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+        Adding a department here also drives the tab panels for the asset allocation forms in Screens 5 &amp; 6.
+      </p>
 
-        <button
-          onClick={() => setActiveTab('employees')}
-          className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'employees' 
-              ? 'bg-[#f0f4fc] dark:bg-[#202020] text-[#2563eb] shadow-inner' 
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
+      {/* Tabs + Table Card */}
+      <div className="af-card" style={{ overflow: 'hidden' }}>
+        {/* Tab Bar */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.25rem',
+            padding: '0.75rem 1rem',
+            borderBottom: '1px solid var(--border-subtle)',
+            background: 'var(--bg-elevated)',
+          }}
         >
-          <Users className="w-4 h-4" />
-          <span>Employees</span>
-        </button>
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              className={`af-tab${activeTab === id ? ' active' : ''}`}
+              onClick={() => { setActiveTab(id); setShowAddPanel(false); }}
+            >
+              <Icon size={13} />
+              {label}
+            </button>
+          ))}
+        </div>
 
-        <button
-          onClick={() => setActiveTab('add')}
-          className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'add' 
-              ? 'bg-[#2563eb] text-white shadow-md' 
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Plus className="w-4 h-4" />
-          <span>+ Add</span>
-        </button>
+        {/* Table Panels */}
+        <div>
+          {/* Departments */}
+          {activeTab === 'departments' && (
+            <div>
+              <div style={{ padding: '0.875rem 1.25rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                  Department Registry
+                </span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="af-table">
+                  <thead>
+                    <tr>
+                      <th>Department Name</th>
+                      <th>Head of Dept</th>
+                      <th>Parent Dept</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {departments.map(dept => (
+                      <tr key={dept.id}>
+                        <td className="af-table-primary">{dept.name}</td>
+                        <td>{dept.head}</td>
+                        <td>{dept.parent}</td>
+                        <td>
+                          <Badge variant={dept.status === 'Active' ? 'success' : 'neutral'}>
+                            {dept.status}
+                          </Badge>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            className="af-btn af-btn-secondary"
+                            style={{ fontSize: '0.6875rem', padding: '0.25rem 0.625rem' }}
+                            onClick={() => toggleDeptStatus(dept.id)}
+                          >
+                            {dept.status === 'Active' ? 'Deactivate' : 'Activate'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {departments.length === 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                          No departments added yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Categories */}
+          {activeTab === 'categories' && (
+            <div>
+              <div style={{ padding: '0.875rem 1.25rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                  Custom Category Schema Fields
+                </span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="af-table">
+                  <thead>
+                    <tr>
+                      <th>Category Name</th>
+                      <th>Custom Spec Fields</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {categories.map(cat => (
+                      <tr key={cat.id}>
+                        <td className="af-table-primary">{cat.name}</td>
+                        <td style={{ color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                          {cat.customFields}
+                        </td>
+                      </tr>
+                    ))}
+                    {categories.length === 0 && (
+                      <tr>
+                        <td colSpan={2} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                          No categories defined yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Employees */}
+          {activeTab === 'employees' && (
+            <div>
+              <div style={{ padding: '0.875rem 1.25rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                  Staff Directory &amp; Permissions
+                </span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="af-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Email Address</th>
+                      <th>Department</th>
+                      <th>System Role</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employees.map(emp => (
+                      <tr key={emp.id}>
+                        <td className="af-table-primary">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div
+                              style={{
+                                width: '26px', height: '26px', borderRadius: '50%',
+                                background: 'var(--accent-bg)',
+                                border: '1px solid var(--accent-border)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '0.6rem', fontWeight: 800, color: 'var(--accent)',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {emp.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
+                            </div>
+                            {emp.name}
+                          </div>
+                        </td>
+                        <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{emp.email}</td>
+                        <td>{emp.department}</td>
+                        <td>
+                          <Badge variant={ROLE_VARIANT[emp.role] ?? 'neutral'}>
+                            {emp.role}
+                          </Badge>
+                        </td>
+                        <td>
+                          <Badge variant={emp.status === 'Active' ? 'success' : 'neutral'}>
+                            {emp.status}
+                          </Badge>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            className="af-btn af-btn-secondary"
+                            style={{ fontSize: '0.6875rem', padding: '0.25rem 0.625rem' }}
+                            onClick={() => toggleEmpStatus(emp.id)}
+                          >
+                            {emp.status === 'Active' ? 'Disable' : 'Enable'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {employees.length === 0 && (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                          No employees registered yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Tab Panels */}
-      <div className="bg-card rounded-2xl p-6 shadow-sm">
-        
-        {/* Departments Panel */}
-        {activeTab === 'departments' && (
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-foreground">Department Registry</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-bold">
-                    <th className="py-3 px-4">Dept Name</th>
-                    <th className="py-3 px-4">Head of Dept</th>
-                    <th className="py-3 px-4">Parent Department</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {departments.map((dept) => (
-                    <tr key={dept.id} className="hover:bg-secondary/10 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-foreground">{dept.name}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{dept.head}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{dept.parent}</td>
-                      <td className="py-3.5 px-4">
-                        <span className={`px-2 py-0.5 rounded-full font-bold text-[9px] ${
-                          dept.status === 'Active' 
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {dept.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => toggleDeptStatus(dept.id)}
-                          className="px-2.5 py-1 bg-card border border-border rounded-lg text-[10px] font-bold hover:bg-secondary transition-colors"
-                        >
-                          Toggle Status
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Categories Panel */}
-        {activeTab === 'categories' && (
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-foreground">Custom Category Schema Fields</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-bold">
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Custom Spec Fields</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {categories.map((cat) => (
-                    <tr key={cat.id} className="hover:bg-secondary/10 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-foreground">{cat.name}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{cat.customFields}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Employees Panel */}
-        {activeTab === 'employees' && (
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-foreground">Staff Directory & Active Sessions</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-bold">
-                    <th className="py-3 px-4">Employee</th>
-                    <th className="py-3 px-4">Email Address</th>
-                    <th className="py-3 px-4">Department</th>
-                    <th className="py-3 px-4">System Role</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {employees.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-secondary/10 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-foreground">{emp.name}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{emp.email}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{emp.department}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">
-                        <span className="bg-secondary px-2 py-0.5 rounded text-[10px] font-semibold">{emp.role}</span>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className={`px-2 py-0.5 rounded-full font-bold text-[9px] ${
-                          emp.status === 'Active' 
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {emp.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => toggleEmpStatus(emp.id)}
-                          className="px-2.5 py-1 bg-card border border-border rounded-lg text-[10px] font-bold hover:bg-secondary transition-colors"
-                        >
-                          Toggle Status
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Add Panel */}
-        {activeTab === 'add' && (
-          <div className="space-y-6">
-            {/* Form Selection Radio Button Box */}
-            <div className="flex gap-4 p-4 border border-border rounded-2xl bg-secondary/20 max-w-md">
-              <label className="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="addType" 
-                  value="department" 
-                  checked={addType === 'department'} 
-                  onChange={(e) => setAddType(e.target.value)} 
-                  className="text-primary focus:ring-primary/20" 
-                />
-                <span>Department</span>
-              </label>
-
-              <label className="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="addType" 
-                  value="category" 
-                  checked={addType === 'category'} 
-                  onChange={(e) => setAddType(e.target.value)} 
-                  className="text-primary focus:ring-primary/20" 
-                />
-                <span>Category</span>
-              </label>
-
-              <label className="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="addType" 
-                  value="employee" 
-                  checked={addType === 'employee'} 
-                  onChange={(e) => setAddType(e.target.value)} 
-                  className="text-primary focus:ring-primary/20" 
-                />
-                <span>Employee</span>
-              </label>
-            </div>
-
-            {/* Department Form */}
-            {addType === 'department' && (
-              <form onSubmit={handleAddDept} className="space-y-4 max-w-md">
-                <h3 className="text-sm font-bold text-foreground">Add New Department</h3>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Department Name</label>
-                  <input
-                    type="text"
-                    value={newDept.name}
-                    onChange={(e) => setNewDept({...newDept, name: e.target.value})}
-                    placeholder="e.g. Marketing"
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Head of Department</label>
-                  <select
-                    value={newDept.head}
-                    onChange={(e) => setNewDept({...newDept, head: e.target.value})}
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  >
-                    <option value="">-- Select Employee --</option>
-                    {employees.map(e => (
-                      <option key={e.id} value={e.name}>{e.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Parent Department</label>
-                  <select
-                    value={newDept.parent}
-                    onChange={(e) => setNewDept({...newDept, parent: e.target.value})}
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  >
-                    <option value="None">None</option>
-                    {departments.map(d => (
-                      <option key={d.id} value={d.name}>{d.name}</option>
-                    ))}
-                  </select>
-                </div>
+      {/* ── Add Panel (slides in below tabs) ──────────────────────── */}
+      {showAddPanel && (
+        <div className="af-card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Add New {addType === 'department' ? 'Department' : addType === 'category' ? 'Category Schema' : 'Employee'}
+            </h2>
+            {/* Type switcher for + Add */}
+            <div style={{ display: 'flex', gap: '0.25rem', background: 'var(--bg-elevated)', padding: '0.2rem', borderRadius: 'var(--radius)' }}>
+              {[
+                { val: 'department', label: 'Dept' },
+                { val: 'category', label: 'Category' },
+                { val: 'employee', label: 'Employee' },
+              ].map(({ val, label }) => (
                 <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#2563eb] text-white font-bold rounded-lg text-xs hover:bg-[#2563eb]/95 transition-all"
+                  key={val}
+                  onClick={() => setAddType(val)}
+                  style={{
+                    padding: '0.3rem 0.65rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    borderRadius: 'calc(var(--radius) - 2px)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    background: addType === val ? 'var(--bg-surface)' : 'transparent',
+                    color: addType === val ? 'var(--accent)' : 'var(--text-muted)',
+                    transition: 'all 0.15s ease',
+                  }}
                 >
-                  Create Department
+                  {label}
                 </button>
-              </form>
-            )}
-
-            {/* Category Form */}
-            {addType === 'category' && (
-              <form onSubmit={handleAddCat} className="space-y-4 max-w-md">
-                <h3 className="text-sm font-bold text-foreground">Add New Custom Field Category</h3>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Category Name</label>
-                  <input
-                    type="text"
-                    value={newCat.name}
-                    onChange={(e) => setNewCat({...newCat, name: e.target.value})}
-                    placeholder="e.g. Lab Equipment"
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Custom Fields (comma-separated specifications)</label>
-                  <input
-                    type="text"
-                    value={newCat.customFields}
-                    onChange={(e) => setNewCat({...newCat, customFields: e.target.value})}
-                    placeholder="e.g. Calibration Date, Voltage"
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#2563eb] text-white font-bold rounded-lg text-xs hover:bg-[#2563eb]/95 transition-all"
-                >
-                  Create Category Schema
-                </button>
-              </form>
-            )}
-
-            {/* Employee Form */}
-            {addType === 'employee' && (
-              <form onSubmit={handleAddEmp} className="space-y-4 max-w-md">
-                <h3 className="text-sm font-bold text-foreground">Register Employee Credentials</h3>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Employee Name</label>
-                  <input
-                    type="text"
-                    value={newEmp.name}
-                    onChange={(e) => setNewEmp({...newEmp, name: e.target.value})}
-                    placeholder="e.g. Priya Shah"
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Corporate Email</label>
-                  <input
-                    type="email"
-                    value={newEmp.email}
-                    onChange={(e) => setNewEmp({...newEmp, email: e.target.value})}
-                    placeholder="e.g. priya@company.com"
-                    className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-muted-foreground mb-1">System Role</label>
-                    <select
-                      value={newEmp.role}
-                      onChange={(e) => setNewEmp({...newEmp, role: e.target.value})}
-                      className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                    >
-                      <option value="Employee">Employee</option>
-                      <option value="Department Head">Department Head</option>
-                      <option value="Asset Manager">Asset Manager</option>
-                      <option value="Admin">Admin</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-muted-foreground mb-1">Department</label>
-                    <select
-                      value={newEmp.department}
-                      onChange={(e) => setNewEmp({...newEmp, department: e.target.value})}
-                      className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground"
-                    >
-                      <option value="">-- Choose Dept --</option>
-                      {departments.map(d => (
-                        <option key={d.id} value={d.name}>{d.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#2563eb] text-white font-bold rounded-lg text-xs hover:bg-[#2563eb]/95 transition-all"
-                >
-                  Register Staff Member
-                </button>
-              </form>
-            )}
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* Department Form */}
+          {addType === 'department' && (
+            <form onSubmit={handleAddDept} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', maxWidth: '480px' }}>
+              <div>
+                <FormLabel>Department Name</FormLabel>
+                <FormInput
+                  type="text"
+                  value={newDept.name}
+                  onChange={e => setNewDept({ ...newDept, name: e.target.value })}
+                  placeholder="e.g. Marketing"
+                />
+              </div>
+              <div>
+                <FormLabel>Head of Department</FormLabel>
+                <FormSelect
+                  value={newDept.head}
+                  onChange={e => setNewDept({ ...newDept, head: e.target.value })}
+                >
+                  <option value="">— Select Employee —</option>
+                  {employees.map(e => <option key={e.id} value={e.name}>{e.name}</option>)}
+                </FormSelect>
+              </div>
+              <div>
+                <FormLabel>Parent Department</FormLabel>
+                <FormSelect
+                  value={newDept.parent}
+                  onChange={e => setNewDept({ ...newDept, parent: e.target.value })}
+                >
+                  <option value="None">None (Top-level)</option>
+                  {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                </FormSelect>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button type="submit" className="af-btn af-btn-primary">Create Department</button>
+                <button type="button" className="af-btn af-btn-secondary" onClick={() => setShowAddPanel(false)}>Cancel</button>
+              </div>
+            </form>
+          )}
+
+          {/* Category Form */}
+          {addType === 'category' && (
+            <form onSubmit={handleAddCat} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', maxWidth: '480px' }}>
+              <div>
+                <FormLabel>Category Name</FormLabel>
+                <FormInput
+                  type="text"
+                  value={newCat.name}
+                  onChange={e => setNewCat({ ...newCat, name: e.target.value })}
+                  placeholder="e.g. Lab Equipment"
+                />
+              </div>
+              <div>
+                <FormLabel>Custom Fields (comma-separated specifications)</FormLabel>
+                <FormInput
+                  type="text"
+                  value={newCat.customFields}
+                  onChange={e => setNewCat({ ...newCat, customFields: e.target.value })}
+                  placeholder="e.g. Calibration Date, Voltage, Warranty"
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button type="submit" className="af-btn af-btn-primary">Create Category Schema</button>
+                <button type="button" className="af-btn af-btn-secondary" onClick={() => setShowAddPanel(false)}>Cancel</button>
+              </div>
+            </form>
+          )}
+
+          {/* Employee Form */}
+          {addType === 'employee' && (
+            <form onSubmit={handleAddEmp} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', maxWidth: '480px' }}>
+              <div>
+                <FormLabel>Full Name</FormLabel>
+                <FormInput
+                  type="text"
+                  value={newEmp.name}
+                  onChange={e => setNewEmp({ ...newEmp, name: e.target.value })}
+                  placeholder="e.g. Priya Shah"
+                />
+              </div>
+              <div>
+                <FormLabel>Corporate Email</FormLabel>
+                <FormInput
+                  type="email"
+                  value={newEmp.email}
+                  onChange={e => setNewEmp({ ...newEmp, email: e.target.value })}
+                  placeholder="e.g. priya@company.com"
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+                <div>
+                  <FormLabel>System Role</FormLabel>
+                  <FormSelect value={newEmp.role} onChange={e => setNewEmp({ ...newEmp, role: e.target.value })}>
+                    <option value="Employee">Employee</option>
+                    <option value="Department Head">Department Head</option>
+                    <option value="Asset Manager">Asset Manager</option>
+                    <option value="Admin">Admin</option>
+                  </FormSelect>
+                </div>
+                <div>
+                  <FormLabel>Department</FormLabel>
+                  <FormSelect value={newEmp.department} onChange={e => setNewEmp({ ...newEmp, department: e.target.value })}>
+                    <option value="">— Select Dept —</option>
+                    {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                  </FormSelect>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button type="submit" className="af-btn af-btn-primary">Register Employee</button>
+                <button type="button" className="af-btn af-btn-secondary" onClick={() => setShowAddPanel(false)}>Cancel</button>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
     </div>
   );
 }

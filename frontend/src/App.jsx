@@ -21,6 +21,7 @@ import OrganizationSetup from './dashboard/pages/OrganizationSetup';
 import Settings from './dashboard/pages/Settings';
 import Help from './dashboard/pages/Help';
 import Logout from './dashboard/pages/Logout';
+import Notifications from './dashboard/pages/Notifications';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="help" element={<Help />} />
             <Route path="logout" element={<Logout />} />
+            <Route path="notifications" element={<Notifications />} />
           </Route>
 
           {/* Catch-all Redirect */}

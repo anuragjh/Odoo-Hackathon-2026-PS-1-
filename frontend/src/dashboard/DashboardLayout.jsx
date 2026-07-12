@@ -1,115 +1,337 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import ThemeToggle from '../components/ThemeToggle';
 import {
   LayoutGrid,
   Boxes,
+  FolderTree,
   CalendarDays,
   Wrench,
   FileCheck,
   BarChart3,
-  CheckSquare,
   Users,
   Settings as SettingsIcon,
   HelpCircle,
   LogOut,
-  FolderTree,
-  ShieldAlert
+  Building2,
+  Bell,
+  ChevronDown,
 } from 'lucide-react';
+
+/* ── Navigation Structure (mirrors blueprint) ────────────────── */
+const NAV_GROUPS = [
+  {
+    label: 'Main',
+    items: [
+      { name: 'Dashboard',    path: '/dashboard',              icon: LayoutGrid },
+    ],
+  },
+  {
+    label: 'Asset Management',
+    items: [
+      { name: 'Assets',             path: '/dashboard/assets',        icon: Boxes },
+      { name: 'Allocation & Transfer', path: '/dashboard/allocations', icon: FolderTree },
+      { name: 'Resource Booking',   path: '/dashboard/bookings',      icon: CalendarDays },
+      { name: 'Maintenance',        path: '/dashboard/maintenance',   icon: Wrench },
+    ],
+  },
+  {
+    label: 'Reporting',
+    items: [
+      { name: 'Audit',       path: '/dashboard/audits',    icon: FileCheck },
+      { name: 'Reports',     path: '/dashboard/analytics', icon: BarChart3 },
+      { name: 'Notifications', path: '/dashboard/notifications', icon: Bell },
+    ],
+  },
+  {
+    label: 'Admin',
+    items: [
+      { name: 'Organisation Setup', path: '/dashboard/organization', icon: Building2 },
+      { name: 'Team',               path: '/dashboard/team',         icon: Users },
+      { name: 'Settings',           path: '/dashboard/settings',     icon: SettingsIcon },
+      { name: 'Help',               path: '/dashboard/help',         icon: HelpCircle },
+    ],
+  },
+];
+
+/* ── Helper: get initials ─────────────────────────────────────── */
+function getInitials(name = '') {
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
 
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser, notificationCount } = useContext(AppContext);
+  const [notifOpen, setNotifOpen] = useState(false);
 
-  const menuItems = [
-    { name: 'Overview', path: '/dashboard', icon: LayoutGrid },
-    { name: 'Assets', path: '/dashboard/assets', icon: Boxes },
-    { name: 'Allocations', path: '/dashboard/allocations', icon: FolderTree },
-    { name: 'Bookings', path: '/dashboard/bookings', icon: CalendarDays },
-    { name: 'Maintenance', path: '/dashboard/maintenance', icon: Wrench },
-    { name: 'Audits', path: '/dashboard/audits', icon: FileCheck },
-    { name: 'Analytics', path: '/dashboard/analytics', icon: BarChart3 },
-    { name: 'Tasks', path: '/dashboard/tasks', icon: CheckSquare },
-    { name: 'Calendar', path: '/dashboard/calendar', icon: CalendarDays },
-    { name: 'Team', path: '/dashboard/team', icon: Users },
-    { name: 'Settings', path: '/dashboard/settings', icon: SettingsIcon },
-    { name: 'Help', path: '/dashboard/help', icon: HelpCircle },
-  ];
+  const handleLogout = () => navigate('/');
 
-  const handleLogout = () => {
-    navigate('/');
+  const isActive = (path) => {
+    if (path === '/dashboard') return location.pathname === '/dashboard';
+    return location.pathname.startsWith(path);
   };
 
   return (
-    <div className="flex h-screen bg-[#080810] text-slate-100 font-sans overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-white/5 bg-[#0c0c16]/75 backdrop-blur-xl flex flex-col justify-between">
-        <div>
-          {/* Logo Header */}
-          <div className="p-6 flex items-center space-x-3 border-b border-white/5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#FF3366] to-[#00E5FF] p-[2px]">
-              <div className="w-full h-full bg-[#080810] rounded-[6px] flex items-center justify-center">
-                <Boxes className="w-4 h-4 text-[#FF3366]" />
-              </div>
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white">
-              Asset<span className="text-[#FF3366]">Flow</span>
-            </span>
+    <div
+      style={{
+        display: 'flex',
+        height: '100vh',
+        overflow: 'hidden',
+        backgroundColor: 'var(--bg-base)',
+        color: 'var(--text-primary)',
+        fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
+      }}
+    >
+      {/* ── SIDEBAR ───────────────────────────────────────────── */}
+      <aside className="af-sidebar">
+        {/* Logo */}
+        <div className="af-sidebar-logo">
+          <div className="af-sidebar-logo-mark">
+            <Boxes size={16} color="#fff" />
           </div>
-
-          {/* Navigation Links */}
-          <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-140px)]">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-gradient-to-r from-[#FF3366]/15 to-transparent border-l-2 border-[#FF3366] text-white'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#FF3366]' : 'text-slate-400'}`} />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          <span className="af-sidebar-logo-text">
+            Asset<span style={{ color: 'var(--accent)' }}>Flow</span>
+          </span>
         </div>
 
-        {/* Footer/Logout */}
-        <div className="p-4 border-t border-white/5">
+        {/* Navigation */}
+        <nav className="af-sidebar-nav">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} style={{ marginBottom: '0.25rem' }}>
+              <div className="af-sidebar-section-label">{group.label}</div>
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.path);
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`af-nav-item${active ? ' active' : ''}`}
+                  >
+                    <Icon size={15} />
+                    <span>{item.name}</span>
+                    {item.name === 'Notifications' && notificationCount > 0 && (
+                      <span
+                        style={{
+                          marginLeft: 'auto',
+                          background: 'var(--danger)',
+                          color: '#fff',
+                          fontSize: '0.6rem',
+                          fontWeight: 800,
+                          borderRadius: '999px',
+                          padding: '1px 6px',
+                          lineHeight: '1.5',
+                        }}
+                      >
+                        {notificationCount}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
+
+        {/* Sidebar Footer — User + Logout */}
+        <div
+          style={{
+            borderTop: '1px solid var(--border-subtle)',
+            padding: '0.75rem 0.5rem',
+          }}
+        >
+          {/* User row */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.5rem 0.625rem',
+              borderRadius: 'var(--radius)',
+              marginBottom: '2px',
+            }}
+          >
+            <div
+              style={{
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                background: 'var(--accent-bg)',
+                border: '1.5px solid var(--accent-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.6875rem',
+                fontWeight: 800,
+                color: 'var(--accent)',
+                flexShrink: 0,
+              }}
+            >
+              {getInitials(currentUser?.name)}
+            </div>
+            <div style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {currentUser?.name}
+              </div>
+              <div style={{ fontSize: '0.6375rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                {currentUser?.role}
+              </div>
+            </div>
+          </div>
+
+          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-3 w-full px-4 py-2.5 text-slate-400 hover:text-[#FF3366] hover:bg-[#FF3366]/5 rounded-lg text-sm font-medium transition-all duration-200"
+            className="af-nav-item"
+            style={{ color: 'var(--text-muted)', width: '100%' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'var(--danger-bg)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut size={15} />
             <span>Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-[#080810]">
-        {/* Top Navbar */}
-        <header className="h-16 border-b border-white/5 bg-[#0c0c16]/50 flex items-center justify-between px-8">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-[#00E5FF] bg-[#00E5FF]/10 px-2.5 py-1 rounded-full font-mono uppercase tracking-wider">
-              Environment: Active
+      {/* ── MAIN CONTENT ──────────────────────────────────────── */}
+      <main
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          backgroundColor: 'var(--bg-base)',
+          minWidth: 0,
+        }}
+      >
+        {/* Top Header */}
+        <header className="af-header">
+          {/* Left — breadcrumb / page indicator */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'var(--accent)',
+                background: 'var(--accent-bg)',
+                border: '1px solid var(--accent-border)',
+                padding: '3px 10px',
+                borderRadius: '999px',
+              }}
+            >
+              AssetFlow ERP
             </span>
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-slate-300">Admin Session</span>
-            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10">
-              <span className="text-xs font-bold text-[#FF3366]">A</span>
+
+          {/* Right — actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* Notification Bell */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: 'var(--radius)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-default)',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                }}
+                aria-label="Notifications"
+              >
+                <Bell size={15} />
+                {notificationCount > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      right: '-4px',
+                      background: 'var(--danger)',
+                      color: '#fff',
+                      fontSize: '0.55rem',
+                      fontWeight: 800,
+                      width: '14px',
+                      height: '14px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {notificationCount}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div style={{ width: '1px', height: '20px', background: 'var(--border-default)' }} />
+
+            {/* User Avatar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+              <div
+                style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  background: 'var(--accent-bg)',
+                  border: '1.5px solid var(--accent-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.6875rem',
+                  fontWeight: 800,
+                  color: 'var(--accent)',
+                }}
+              >
+                {getInitials(currentUser?.name)}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {currentUser?.name?.split(' ')[0]}
+                </span>
+                <span style={{ fontSize: '0.625rem', color: 'var(--text-muted)' }}>
+                  {currentUser?.role}
+                </span>
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Dynamic Route Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        {/* Page Content */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            backgroundColor: 'var(--bg-base)',
+          }}
+        >
           <Outlet />
         </div>
       </main>
