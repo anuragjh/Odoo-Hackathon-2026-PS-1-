@@ -49,7 +49,7 @@ function Settings() {
   };
 
   return (
-    <div className="space-y-6 animate-slide-in-up">
+    <div className="af-page space-y-6 animate-slide-in-up">
       {/* Title */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Console Settings</h1>
@@ -67,32 +67,29 @@ function Settings() {
         {/* Settings Navigation Menu */}
         <div className="bg-card border border-border rounded-2xl p-4 shadow-sm h-fit">
           <nav className="flex flex-col gap-1 text-xs font-semibold">
-            <button 
+            <button
               onClick={() => setActiveSettingsTab('Profile')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${
-                activeSettingsTab === 'Profile' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
-              }`}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${activeSettingsTab === 'Profile' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
+                }`}
             >
               <User className="w-4 h-4" />
               <span>User Profile Info</span>
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setActiveSettingsTab('Notifications')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${
-                activeSettingsTab === 'Notifications' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
-              }`}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${activeSettingsTab === 'Notifications' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
+                }`}
               style={{ whiteSpace: 'nowrap' }}
             >
               <Bell className="w-4 h-4" style={{ flexShrink: 0 }} />
               <span>Notification Alerts</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveSettingsTab('Promotion')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${
-                activeSettingsTab === 'Promotion' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
-              }`}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-left ${activeSettingsTab === 'Promotion' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
+                }`}
               style={{ whiteSpace: 'nowrap' }}
             >
               <Users className="w-4 h-4" style={{ flexShrink: 0 }} />
@@ -107,12 +104,12 @@ function Settings() {
             <div className="space-y-4">
               <h2 className="text-sm font-bold text-foreground">User Profile Information</h2>
               <p className="text-xs text-muted-foreground">Modify local name, email, and designated role credentials.</p>
-              
+
               <form onSubmit={handleProfileSave} className="space-y-4 max-w-md pt-2">
                 <div>
                   <label className="block text-xs font-semibold text-muted-foreground mb-1">Full Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={profileName}
                     onChange={(e) => setProfileName(e.target.value)}
                     className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
@@ -120,8 +117,8 @@ function Settings() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-muted-foreground mb-1">Email Address</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={profileEmail}
                     onChange={(e) => setProfileEmail(e.target.value)}
                     className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
@@ -129,7 +126,7 @@ function Settings() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-muted-foreground mb-1">System Role Elevation</label>
-                  <select 
+                  <select
                     value={profileRole}
                     onChange={(e) => setProfileRole(e.target.value)}
                     className="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
@@ -140,8 +137,8 @@ function Settings() {
                     <option value="Employee">Employee</option>
                   </select>
                 </div>
-                
-                <button 
+
+                <button
                   type="submit"
                   className="bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-lg text-xs hover:bg-primary/95 transition-all shadow-md"
                 >
@@ -155,14 +152,14 @@ function Settings() {
             <div className="space-y-4">
               <h2 className="text-sm font-bold text-foreground">Notification Alert Routing</h2>
               <p className="text-xs text-muted-foreground">Select how AssetFlow informs you of return dates and approvals.</p>
-              
+
               <div className="space-y-4 pt-4 max-w-md">
                 <div className="flex items-center justify-between p-3.5 rounded-xl border border-border">
                   <div>
                     <span className="text-xs font-semibold text-foreground">Email Notifications</span>
                     <p className="text-[10px] text-muted-foreground mt-0.5">Receive handover receipts and audit summaries by email.</p>
                   </div>
-                  <input 
+                  <input
                     type="checkbox"
                     checked={emailAlerts}
                     onChange={(e) => setEmailAlerts(e.target.checked)}
@@ -175,7 +172,7 @@ function Settings() {
                     <span className="text-xs font-semibold text-foreground">Push Notifications</span>
                     <p className="text-[10px] text-muted-foreground mt-0.5">Real-time alerts for booking slots overlaps warnings.</p>
                   </div>
-                  <input 
+                  <input
                     type="checkbox"
                     checked={pushAlerts}
                     onChange={(e) => setPushAlerts(e.target.checked)}
@@ -188,7 +185,7 @@ function Settings() {
                     <span className="text-xs font-semibold text-foreground">Overdue Return Reminders</span>
                     <p className="text-[10px] text-muted-foreground mt-0.5">Automatic hourly flags for items past expected return dates.</p>
                   </div>
-                  <input 
+                  <input
                     type="checkbox"
                     checked={returnReminders}
                     onChange={(e) => setReturnReminders(e.target.checked)}
@@ -211,7 +208,7 @@ function Settings() {
 
               <div className="space-y-3 pt-3">
                 {employees.map(emp => (
-                  <div 
+                  <div
                     key={emp.id}
                     className="p-4 rounded-xl border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                   >

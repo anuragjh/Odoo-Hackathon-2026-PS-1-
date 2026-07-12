@@ -146,6 +146,7 @@ export default function LandingPage() {
         gsap.from(featRef.current.querySelectorAll('.lp-feat-card'), {
           scrollTrigger: { trigger: featRef.current, start: 'top 80%' },
           y: 50, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out',
+          clearProps: "all"
         });
       }
 
@@ -154,6 +155,7 @@ export default function LandingPage() {
         gsap.from(ctaSectRef.current.querySelectorAll('.lp-anim'), {
           scrollTrigger: { trigger: ctaSectRef.current, start: 'top 75%' },
           y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+          clearProps: "all"
         });
       }
     }, rootRef);
@@ -190,9 +192,8 @@ export default function LandingPage() {
       {/* ── Nav ───────────────────────────────────────────────────────────── */}
       <nav className="lp-nav" ref={navRef}>
         <div className="lp-nav-inner">
-          <div className="lp-logo">
-            <div className="lp-logo-mark"><Ico path={ICONS.box} size={16} /></div>
-            <span>AssetFlow</span>
+          <div className="lp-logo montenegrin-gothic-one-regular" style={{ fontSize: '1.2rem', color: '#fff' }}>
+            AssetFlow
           </div>
           <div className="lp-nav-links">
             <a href="#features">Features</a>
@@ -251,9 +252,8 @@ export default function LandingPage() {
             <div className="lp-mockup-body">
               {/* Collapsible Sidebar */}
               <div className="lp-mockup-sidebar">
-                <div className="lp-sidebar-brand">
-                  <div className="lp-brand-icon"><Ico path={ICONS.box} size={13} /></div>
-                  <span>AssetFlow</span>
+                <div className="lp-sidebar-brand montenegrin-gothic-one-regular" style={{ fontSize: '1rem', color: '#fff' }}>
+                  AssetFlow
                 </div>
                 <nav className="lp-sidebar-nav">
                   <div className="lp-side-item active">

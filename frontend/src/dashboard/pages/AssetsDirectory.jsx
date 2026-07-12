@@ -98,7 +98,7 @@ function AssetsDirectory() {
   };
 
   return (
-    <div className="space-y-6 animate-slide-in-up">
+    <div className="af-page space-y-6 animate-slide-in-up">
       {/* Page Title */}
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">Asset registrations and directory</h1>

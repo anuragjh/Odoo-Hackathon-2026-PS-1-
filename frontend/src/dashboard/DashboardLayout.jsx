@@ -25,23 +25,23 @@ const NAV_GROUPS = [
   {
     label: 'Main',
     items: [
-      { name: 'Dashboard',    path: '/dashboard',              icon: LayoutGrid },
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutGrid },
     ],
   },
   {
     label: 'Asset Management',
     items: [
-      { name: 'Assets',             path: '/dashboard/assets',        icon: Boxes },
+      { name: 'Assets', path: '/dashboard/assets', icon: Boxes },
       { name: 'Allocation & Transfer', path: '/dashboard/allocations', icon: FolderTree },
-      { name: 'Resource Booking',   path: '/dashboard/bookings',      icon: CalendarDays },
-      { name: 'Maintenance',        path: '/dashboard/maintenance',   icon: Wrench },
+      { name: 'Resource Booking', path: '/dashboard/bookings', icon: CalendarDays },
+      { name: 'Maintenance', path: '/dashboard/maintenance', icon: Wrench },
     ],
   },
   {
     label: 'Reporting',
     items: [
-      { name: 'Audit',       path: '/dashboard/audits',    icon: FileCheck },
-      { name: 'Reports',     path: '/dashboard/analytics', icon: BarChart3 },
+      { name: 'Audit', path: '/dashboard/audits', icon: FileCheck },
+      { name: 'Reports', path: '/dashboard/analytics', icon: BarChart3 },
       { name: 'Notifications', path: '/dashboard/notifications', icon: Bell },
     ],
   },
@@ -49,9 +49,9 @@ const NAV_GROUPS = [
     label: 'Admin',
     items: [
       { name: 'Organisation Setup', path: '/dashboard/organization', icon: Building2 },
-      { name: 'Team',               path: '/dashboard/team',         icon: Users },
-      { name: 'Settings',           path: '/dashboard/settings',     icon: SettingsIcon },
-      { name: 'Help',               path: '/dashboard/help',         icon: HelpCircle },
+      { name: 'Team', path: '/dashboard/team', icon: Users },
+      { name: 'Settings', path: '/dashboard/settings', icon: SettingsIcon },
+      { name: 'Help', path: '/dashboard/help', icon: HelpCircle },
     ],
   },
 ];
@@ -95,11 +95,8 @@ export default function DashboardLayout() {
       <aside className="af-sidebar">
         {/* Logo */}
         <div className="af-sidebar-logo">
-          <div className="af-sidebar-logo-mark">
-            <Boxes size={16} color="#fff" />
-          </div>
-          <span className="af-sidebar-logo-text">
-            Asset<span style={{ color: 'var(--accent)' }}>Flow</span>
+          <span className="montenegrin-gothic-one-regular" style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>
+            AssetFlow
           </span>
         </div>
 

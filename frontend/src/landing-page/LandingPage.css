@@ -3,7 +3,14 @@
    Palette: near-black bg · off-white text · single accent (ink)
    ═══════════════════════════════════════════════════════════════ */
 
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Geist+Mono:wght@100..900&family=Geist+Pixel&family=Montenegrin+Gothic+One&family=Nabla&family=Orbitron:wght@400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+.montenegrin-gothic-one-regular {
+  font-family: "Montenegrin Gothic One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* ── Tokens ───────────────────────────────────────────────────── */
 :root {
@@ -785,6 +792,8 @@
 
 /* ── CTA Section ──────────────────────────────────────────────── */
 .lp-cta-sect {
+  position: relative;
+  z-index: 10;
   padding: 8rem 2.5rem;
   border-bottom: 1px solid var(--border);
 }
@@ -792,6 +801,10 @@
   max-width: 640px;
   margin: 0 auto;
   text-align: center;
+}
+.lp-cta-inner button,
+.lp-cta-inner a {
+  pointer-events: auto;
 }
 .lp-cta-title {
   font-size: clamp(2rem, 5vw, 4rem);
