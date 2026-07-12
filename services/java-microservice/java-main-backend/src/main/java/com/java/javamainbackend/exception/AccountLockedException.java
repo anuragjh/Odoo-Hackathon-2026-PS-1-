@@ -1,0 +1,10 @@
+package com.java.javamainbackend.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class AccountLockedException extends ApiException {
+
+    public AccountLockedException(String message) {
+        super(HttpStatus.LOCKED, "ACCOUNT_LOCKED", message);
+    }
+}
