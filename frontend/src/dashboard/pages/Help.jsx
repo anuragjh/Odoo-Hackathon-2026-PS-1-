@@ -68,20 +68,72 @@ function Help() {
       {/* Accordion FAQ */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
         <h2 className="text-sm font-bold text-foreground mb-4">Frequently Asked Questions</h2>
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {faqs.map((faq, index) => {
             const isOpen = openFaqIndex === index;
             return (
-              <div key={index} className="border border-border rounded-xl overflow-hidden text-xs">
+              <div 
+                key={index} 
+                className="overflow-hidden text-xs"
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: isOpen ? '1px solid var(--accent)' : '1px solid var(--border-default)',
+                  borderLeft: isOpen ? '3px solid var(--accent)' : '3px solid var(--border-subtle)',
+                  borderRadius: '12px',
+                  transition: 'all 0.2s ease',
+                }}
+              >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full px-4 py-3 flex items-center justify-between text-left font-semibold text-foreground hover:bg-secondary/40 transition-colors"
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.75rem',
+                    padding: '0.875rem 1rem',
+                    textAlign: 'left',
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.8125rem',
+                    transition: 'background 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-surface)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <span>{faq.q}</span>
-                  {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  <span style={{ flex: 1 }}>{faq.q}</span>
+                  <span
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '8px',
+                      background: isOpen ? 'var(--accent-bg)' : 'var(--bg-surface)',
+                      border: '1px solid var(--border-subtle)',
+                      flexShrink: 0,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {isOpen ? <ChevronUp className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} /> : <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />}
+                  </span>
                 </button>
                 {isOpen && (
-                  <div className="px-4 py-3 bg-secondary/20 border-t border-border text-muted-foreground leading-relaxed animate-fade-in">
+                  <div 
+                    className="animate-fade-in"
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderTop: '1px solid var(--border-subtle)',
+                      color: 'var(--text-secondary)',
+                      lineHeight: '1.65',
+                      fontSize: '0.75rem',
+                      background: 'var(--bg-surface)',
+                    }}
+                  >
                     {faq.a}
                   </div>
                 )}
