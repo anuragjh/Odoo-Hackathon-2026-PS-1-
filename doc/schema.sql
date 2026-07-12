@@ -168,3 +168,65 @@ CREATE TABLE organizations (
     created_by UUID,
     updated_by UUID
 );
+
+-- department schema
+CREATE TABLE departments
+(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    organization_id UUID NOT NULL,
+
+    department_name VARCHAR(150) NOT NULL,
+
+    department_code VARCHAR(20),
+
+    description TEXT,
+
+    parent_department_id UUID,
+
+    department_head_id UUID,
+
+    is_active BOOLEAN DEFAULT TRUE,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_department_org
+        FOREIGN KEY (organization_id)
+        REFERENCES organizations(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_parent_department
+        FOREIGN KEY (parent_department_id)
+        REFERENCES departments(id),
+
+    CONSTRAINT fk_department_head
+        FOREIGN KEY (department_head_id)
+        REFERENCES users(id)
+);
+
+--asset category schema
+CREATE TABLE asset_categories
+(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    organization_id UUID NOT NULL,
+
+    category_name VARCHAR(120) NOT NULL,
+
+    category_code VARCHAR(20),
+
+    description TEXT,
+
+    is_active BOOLEAN DEFAULT TRUE,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_category_org
+        FOREIGN KEY (organization_id)
+        REFERENCES organizations(id)
+        ON DELETE CASCADE
+);
