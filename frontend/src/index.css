@@ -4,90 +4,46 @@
 
 @layer base {
   :root {
-    --background: 217 56% 94%;      /* Neumorphic base background */
-    --foreground: 217 40% 20%;
+    --background: 240 10% 3.9%;      /* #09090B */
+    --foreground: 0 0% 100%;         /* #FFFFFF */
 
-    --card: 217 56% 94%;            /* Neumorphic base background for cards */
-    --card-foreground: 217 40% 20%;
+    --card: 240 5.9% 10%;            /* #18181B */
+    --card-foreground: 0 0% 100%;
 
-    --popover: 217 56% 94%;
-    --popover-foreground: 217 40% 20%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 221 83% 53%;        /* Vivid Blue */
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;            /* White */
+    --primary-foreground: 240 5.9% 10%;
 
-    --secondary: 217 50% 90%;      /* Slightly darker for inset elements */
-    --secondary-foreground: 221 83% 53%;
+    --secondary: 240 3.7% 15.9%;     /* #27272A */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217 30% 88%;
-    --muted-foreground: 217 20% 45%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%; /* #71717A (zinc-500) */
 
-    --accent: 217 50% 90%;
-    --accent-foreground: 221 83% 53%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 56% 94%;          /* Same as background to hide hard borders */
-    --input: 217 56% 94%;
-    --ring: 221 83% 53%;
+    --border: 240 5.9% 15%;          /* #27272A */
+    --input: 240 5.9% 15%;
+    --ring: 240 4.9% 83.9%;          /* #D4D4D8 */
 
-    --radius: 1rem;                 /* Soft, curvy corners */
-
-    /* Neumorphism Light Theme */
-    --neu-bg: #e6edf8;
-    --neu-flat-shadow: 5px 5px 10px #c8d0e7, -5px -5px 10px #ffffff;
-    --neu-pressed-shadow: inset 4px 4px 8px #c8d0e7, inset -4px -4px 8px #ffffff;
-    --neu-hover-shadow: 2px 2px 5px #c8d0e7, -2px -2px 5px #ffffff;
-    --neu-btn-text: #5e6e8c;
-    --neu-btn-text-active: #2563eb;
-  }
-
-  .dark {
-    --background: 0 0% 4%;          /* #0a0a0a - Pure Deep Black */
-    --foreground: 0 0% 90%;
-
-    --card: 0 0% 8%;                /* #141414 - Dark Neumorphic Card Base */
-    --card-foreground: 0 0% 90%;
-
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 90%;
-
-    --primary: 217 91% 60%;        /* Bright Blue */
-    --primary-foreground: 0 0% 4%;
-
-    --secondary: 0 0% 12%;          /* #1f1f1f */
-    --secondary-foreground: 0 0% 90%;
-
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 60%;
-
-    --accent: 0 0% 12%;
-    --accent-foreground: 217 91% 60%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 90%;
-
-    --border: 0 0% 4%;
-    --input: 0 0% 4%;
-    --ring: 217 91% 60%;
-
-    /* Neumorphism Dark Theme (Black Type) */
-    --neu-bg: #121212;
-    --neu-flat-shadow: 5px 5px 10px #050505, -5px -5px 10px #1f1f1f;
-    --neu-pressed-shadow: inset 4px 4px 8px #050505, inset -4px -4px 8px #1f1f1f;
-    --neu-hover-shadow: 2px 2px 5px #050505, -2px -2px 5px #1f1f1f;
-    --neu-btn-text: #a3a3a3;
-    --neu-btn-text-active: #3b82f6;
+    --radius: 0.5rem;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: rgba(255, 255, 255, 0.08) !important;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: #09090B !important;
+    color: #FFFFFF !important;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   }
 }
 
@@ -100,89 +56,45 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* Neumorphism Utility Classes */
-.neu-sidebar {
-  background-color: var(--neu-bg) !important;
-  border-right: none !important;
-}
-
-.neu-btn-flat {
-  background-color: var(--neu-bg) !important;
-  color: var(--neu-btn-text) !important;
-  box-shadow: var(--neu-flat-shadow) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.neu-btn-flat:hover {
-  color: var(--neu-btn-text-active) !important;
-  box-shadow: var(--neu-hover-shadow) !important;
-  transform: translateY(-1px);
-}
-
-.neu-btn-pressed {
-  background-color: var(--neu-bg) !important;
-  color: var(--neu-btn-text-active) !important;
-  box-shadow: var(--neu-pressed-shadow) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.neu-logo-circle {
-  background-color: var(--neu-bg) !important;
-  box-shadow: var(--neu-flat-shadow) !important;
-  color: var(--neu-btn-text-active) !important;
-  border: none !important;
-}
-
-.neu-logo-circle:hover {
-  box-shadow: var(--neu-pressed-shadow) !important;
-}
-
-.neu-user-footer {
-  background-color: var(--neu-bg) !important;
-  box-shadow: var(--neu-pressed-shadow) !important;
-  border-radius: 1rem !important;
-  padding: 0.75rem !important;
-}
-
-/* Global Neumorphism Overrides */
-
-/* Cards */
+/* Card & Widget Overrides for Monochrome Tech Aesthetic */
 .bg-card, 
-div.border {
-  background-color: var(--neu-bg) !important;
-  box-shadow: var(--neu-flat-shadow) !important;
-  border-color: transparent !important;
+div.bg-card,
+[class*="bg-card"],
+.bg-[#121212],
+div.border,
+.border-border,
+.border {
+  background-color: rgba(24, 24, 27, 0.65) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Modals */
-.fixed .bg-card,
-.fixed .shadow-xl {
-  background-color: var(--neu-bg) !important;
-  box-shadow: var(--neu-flat-shadow) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Remove card/panel borders */
+/* Remove default heavy border overrides */
 .border-border,
 .border-t,
 .border-b,
 .border-r,
 .border-l {
-  border-color: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Header styling */
-header {
-  background-color: var(--neu-bg) !important;
-  border-bottom: none !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+/* Modals */
+.fixed .bg-card,
+.fixed .shadow-xl,
+.fixed div.border {
+  background-color: rgba(24, 24, 27, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Inputs & Form Elements */
@@ -194,18 +106,14 @@ input[type="password"],
 input[type="search"],
 select,
 textarea {
-  background-color: var(--neu-bg) !important;
-  color: var(--foreground) !important;
-  box-shadow: var(--neu-pressed-shadow) !important;
-  border: none !important;
-  border-radius: 0.75rem !important;
+  background-color: #09090B !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0.5rem !important;
   padding: 0.625rem 0.875rem;
   outline: none !important;
   transition: all 0.2s ease !important;
-}
-
-input.pl-9 {
-  padding-left: 2.25rem !important;
+  box-shadow: none !important;
 }
 
 input[type="text"]:focus,
@@ -216,97 +124,189 @@ input[type="password"]:focus,
 input[type="search"]:focus,
 select:focus,
 textarea:focus {
-  box-shadow: var(--neu-pressed-shadow), 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
-/* Buttons */
-button.bg-primary {
-  background-color: var(--neu-bg) !important;
-  color: var(--neu-btn-text-active) !important;
-  box-shadow: var(--neu-flat-shadow) !important;
-  border: none !important;
-  font-weight: 700 !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* Typography Overrides */
+/* Metric Titles: Change card headings to clean muted grey (#71717A) */
+h3.text-muted-foreground,
+.text-muted-foreground,
+.text-slate-400,
+.text-slate-500,
+.text-zinc-400,
+.text-zinc-500 {
+  color: #71717A !important;
 }
 
-button.bg-primary:hover {
-  box-shadow: var(--neu-hover-shadow) !important;
-  transform: translateY(-1px) !important;
+/* Large Numbers: Stark pure white (#FFFFFF) or high-contrast silver (#E4E4E7) */
+.text-4xl.font-extrabold,
+.text-3xl.font-extrabold,
+.text-5xl.font-extrabold,
+.text-2xl.font-extrabold,
+.text-4xl,
+.text-3xl,
+.text-5xl {
+  color: #FFFFFF !important;
 }
 
-button.bg-primary:active {
-  box-shadow: var(--neu-pressed-shadow) !important;
-  transform: translateY(0) !important;
+/* Headers */
+h1, .text-foreground, h2 {
+  color: #FFFFFF !important;
 }
 
-/* Standard Buttons & Secondary Buttons */
+/* Action Buttons Overrides */
+button,
+button.bg-primary, 
+button.bg-secondary, 
 button.border-border, 
-button.bg-card, 
-button.bg-secondary,
-button.hover\:bg-secondary {
-  background-color: var(--neu-bg) !important;
-  color: var(--neu-btn-text) !important;
-  box-shadow: var(--neu-flat-shadow) !important;
-  border: none !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+button.bg-card,
+button.bg-rose-600,
+button[class*="bg-[#2563eb]"],
+button[class*="bg-[#3b82f6]"] {
+  background-color: #18181B !important;
+  color: #FFFFFF !important;
+  border: 1px solid #27272A !important;
+  box-shadow: none !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+button:hover,
+button.bg-primary:hover, 
+button.bg-secondary:hover, 
 button.border-border:hover, 
-button.bg-card:hover, 
-button.bg-secondary:hover,
-button.hover\:bg-secondary:hover {
-  box-shadow: var(--neu-hover-shadow) !important;
-  color: var(--neu-btn-text-active) !important;
+button.bg-card:hover,
+button.bg-rose-600:hover,
+button[class*="bg-[#2563eb]"]:hover,
+button[class*="bg-[#3b82f6]"]:hover {
+  background-color: #FFFFFF !important;
+  color: #09090B !important;
+  border-color: #FFFFFF !important;
   transform: translateY(-1px) !important;
 }
 
+button:active,
+button.bg-primary:active, 
+button.bg-secondary:active, 
 button.border-border:active, 
-button.bg-card:active, 
-button.bg-secondary:active,
-button.hover\:bg-secondary:active {
-  box-shadow: var(--neu-pressed-shadow) !important;
+button.bg-card:active,
+button.bg-rose-600:active {
   transform: translateY(0) !important;
 }
 
-/* List Items / Selections */
-.bg-primary\/5.border-primary,
-.border-primary.bg-primary\/5,
-.bg-primary\/10.ring-primary\/20,
-.bg-secondary\/30.border-border,
-.hover\:bg-secondary\/30:hover {
-  background-color: var(--neu-bg) !important;
-  box-shadow: var(--neu-pressed-shadow) !important;
-  border-color: transparent !important;
+/* SVG icons inside buttons: inherit parent color */
+button svg,
+button.bg-primary svg,
+button.bg-secondary svg,
+button.border-border svg,
+button.bg-card svg,
+button.bg-rose-600 svg,
+button[class*="bg-[#2563eb]"] svg,
+button[class*="bg-[#3b82f6]"] svg {
+  color: currentColor !important;
 }
 
-.selected-item,
-.active-item {
-  box-shadow: var(--neu-pressed-shadow) !important;
+/* Overdue Return Alert Strip */
+.bg-rose-500\/10,
+div[class*="bg-rose-500/10"],
+.bg-red-500\/10,
+div[class*="bg-red-500/10"],
+.bg-rose-50,
+.dark\:bg-rose-950\/20 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #EF4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  border-left-width: 1px !important;
+  box-shadow: none !important;
+  border-radius: 0.5rem !important;
 }
 
-/* KPI primary blue card styling */
-div.bg-primary {
-  background-color: #2563eb !important;
-  color: #ffffff !important;
-  box-shadow: 5px 5px 12px rgba(37, 99, 235, 0.4), -5px -5px 12px rgba(255, 255, 255, 0.6) !important;
-  border: none !important;
+.bg-rose-500\/10 svg,
+div[class*="bg-rose-500/10"] svg,
+.bg-rose-50 svg,
+.dark\:bg-rose-950\/20 svg {
+  color: #EF4444 !important;
 }
 
-.dark div.bg-primary {
-  background-color: #3b82f6 !important;
-  color: #151922 !important;
-  box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.5), -5px -5px 12px rgba(59, 130, 246, 0.15) !important;
-  border: none !important;
+/* Sidebar Navigation Overrides */
+a[class*="bg-gradient-to-r"],
+.bg-gradient-to-r.from-\[\#FF3366\]\/15 {
+  background-image: none !important;
+  background-color: #27272A !important; /* zinc-800 background fill */
+  border-left: 2px solid #FFFFFF !important; /* clean, minimalist white left-accent line */
+  color: #FFFFFF !important;
 }
 
-/* Progress / Slider Track */
-.bg-primary\/10 {
-  background-color: var(--neu-bg) !important;
-  box-shadow: var(--neu-pressed-shadow) !important;
+/* Sidebar Navigation Inactive Links */
+a.text-slate-400,
+.text-slate-400,
+a.text-zinc-400,
+.text-zinc-400 {
+  color: #52525B !important; /* muted zinc (#52525B) */
 }
 
-/* Badges */
-span.rounded-full {
-  box-shadow: var(--neu-flat-shadow);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+a.text-slate-400:hover,
+.text-slate-400:hover,
+a.text-zinc-400:hover,
+.text-zinc-400:hover {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Sidebar Active/Inactive Icons */
+a[class*="bg-gradient-to-r"] svg,
+.bg-gradient-to-r.from-\[\#FF3366\]\/15 svg {
+  color: #FFFFFF !important;
+}
+
+a.text-slate-400 svg,
+.text-slate-400 svg {
+  color: #52525B !important;
+}
+
+a.text-slate-400:hover svg,
+.text-slate-400:hover svg {
+  color: #FFFFFF !important;
+}
+
+/* Base theme structural elements background */
+.bg-\[\#080810\],
+main.bg-\[\#080810\],
+div.bg-\[\#080810\] {
+  background-color: #09090B !important;
+}
+
+aside.bg-\[\#0c0c16\]\/75,
+.bg-\[\#0c0c16\]\/75,
+header.bg-\[\#0c0c16\]\/50,
+.bg-\[\#0c0c16\]\/50 {
+  background-color: rgba(9, 9, 11, 0.8) !important;
+}
+
+/* Secondary background lists/activity items border hover */
+.hover\:bg-secondary\/20:hover {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Badges and state indicators */
+span.bg-emerald-500\/10,
+span.bg-blue-500\/10,
+span.bg-amber-500\/10,
+span.bg-indigo-500\/10,
+span.bg-purple-500\/10,
+span.bg-rose-500\/10 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #D4D4D8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* Recharts grid line and tooltip override */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.04) !important;
+}
+.recharts-tooltip-wrapper {
+  background-color: #18181B !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
