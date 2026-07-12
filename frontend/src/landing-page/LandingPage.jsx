@@ -37,22 +37,22 @@ const MARQUEE = [
 
 // ── Features ──────────────────────────────────────────────────────────────────
 const FEATURES = [
-  { icon: 'box',      n: '01', title: 'Asset Registry',       sub: 'Auto-tagged assets with full 7-state lifecycle tracking.' },
-  { icon: 'users',    n: '02', title: 'Role-Based Access',     sub: 'Four scoped roles — Admin, Asset Manager, Dept. Head, Employee.' },
-  { icon: 'calendar', n: '03', title: 'Resource Booking',      sub: 'Conflict-free time-slot booking with overlap validation.' },
-  { icon: 'tool',     n: '04', title: 'Maintenance Approval',  sub: 'Structured chain: Pending → Approved → In Progress → Resolved.' },
-  { icon: 'shield',   n: '05', title: 'Audit Cycles',          sub: 'Auditor-assigned cycles with auto-generated discrepancy reports.' },
-  { icon: 'chart',    n: '06', title: 'Analytics',             sub: 'Utilization trends, booking heatmaps, dept. summaries.' },
-  { icon: 'bell',     n: '07', title: 'Notifications',         sub: 'Overdue returns, maintenance events and booking reminders.' },
-  { icon: 'layers',   n: '08', title: 'Transfer Workflows',    sub: 'Double-allocation blocked; transfer requests need approval.' },
+  { icon: 'box',      n: '01', title: '7-State Lifecycle',     sub: 'Track assets through Available, Allocated, Reserved, Under Maintenance, Lost, Retired, and Disposed states.' },
+  { icon: 'users',    n: '02', title: 'Role-Based Workflows',  sub: 'Four scoped roles: Admin setup, Asset Manager registry, Dept. Head approvals, and Employee directory.' },
+  { icon: 'calendar', n: '03', title: 'Overlap Validation',    sub: 'Book shared rooms, vehicles, and equipment by time slot with real-time double-allocation defense.' },
+  { icon: 'tool',     n: '04', title: 'Maintenance Routing',   sub: 'Structured repair approvals: route requests through automated validation before repair work starts.' },
+  { icon: 'shield',   n: '05', title: 'Scheduled Audits',      sub: 'Run scheduled audit cycles with assigned auditors and auto-generated discrepancy reports.' },
+  { icon: 'chart',    n: '06', title: 'Real-time Visibility',   sub: 'Surf utilization stats, active bookings, and asset conditions in one unified KPI dashboard.' },
+  { icon: 'bell',     n: '07', title: 'System Notifications',  sub: 'Get automated alerts for overdue returns, maintenance approvals, and booking reminders.' },
+  { icon: 'layers',   n: '08', title: 'Transfer Blockers',     sub: 'Prevent double-allocation and spreadsheet errors with unified, role-based resource transfer logs.' },
 ];
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { val: '10+', label: 'Screens'     },
-  { val: '4',   label: 'User Roles'  },
-  { val: '7',   label: 'Asset States'},
-  { val: '∞',   label: 'Scale'       },
+  { val: '7',    label: 'Asset States' },
+  { val: '4',    label: 'Scoped Roles' },
+  { val: '100%', label: 'Conflict Guard'},
+  { val: '0',    label: 'Spreadsheets' },
 ];
 
 export default function LandingPage() {
@@ -93,7 +93,8 @@ export default function LandingPage() {
     const grow = () => gsap.to(cursor, { scale: 1.8, opacity: 0.5, duration: 0.25 });
     const shrink = () => gsap.to(cursor, { scale: 1, opacity: 1, duration: 0.25 });
 
-    document.querySelectorAll('a, button, .lp-feat-card').forEach(el => {
+    const hoverables = document.querySelectorAll('a, button, .lp-feat-card');
+    hoverables.forEach(el => {
       el.addEventListener('mouseenter', grow);
       el.addEventListener('mouseleave', shrink);
     });
@@ -102,50 +103,61 @@ export default function LandingPage() {
     return () => {
       window.removeEventListener('mousemove', onMove);
       gsap.ticker.remove(raf);
+      hoverables.forEach(el => {
+        el.removeEventListener('mouseenter', grow);
+        el.removeEventListener('mouseleave', shrink);
+      });
     };
   }, []);
 
   // ── Hero entrance ───────────────────────────────────────────────────────────
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.from(navRef.current, { y: -30, opacity: 0, duration: 0.7 })
-      .from(tagRef.current,  { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
-      .from(h1Ref.current.querySelectorAll('.lp-word'), {
-        y: 80, opacity: 0, duration: 0.7, stagger: 0.06, ease: 'power4.out',
-      }, '-=0.2')
-      .from(subRef.current,  { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
-      .from(ctaRef.current.children,  { y: 16, opacity: 0, duration: 0.4, stagger: 0.1 }, '-=0.2')
-      .from(statsRef.current.querySelectorAll('.lp-stat'), {
-        y: 30, opacity: 0, duration: 0.5, stagger: 0.08,
-      }, '-=0.1');
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from(navRef.current, { y: -30, opacity: 0, duration: 0.7 })
+        .from(tagRef.current,  { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
+        .from(h1Ref.current.querySelectorAll('.lp-word'), {
+          y: 80, opacity: 0, duration: 0.7, stagger: 0.06, ease: 'power4.out',
+        }, '-=0.2')
+        .from(subRef.current,  { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
+        .from(ctaRef.current.children,  { y: 16, opacity: 0, duration: 0.4, stagger: 0.1 }, '-=0.2')
+        .from('.lp-dashboard-wrapper', { y: 40, opacity: 0, duration: 0.8 }, '-=0.2')
+        .from(statsRef.current.querySelectorAll('.lp-stat'), {
+          y: 30, opacity: 0, duration: 0.5, stagger: 0.08,
+        }, '-=0.1');
+    }, rootRef);
+
+    return () => ctx.revert();
   }, []);
 
   // ── Scroll animations ───────────────────────────────────────────────────────
   useEffect(() => {
-    // Marquee
-    const mq = marqueeRef.current;
-    if (mq) {
-      const inner = mq.querySelector('.lp-mq-inner');
-      gsap.to(inner, { x: '-50%', duration: 22, ease: 'none', repeat: -1 });
-    }
+    const ctx = gsap.context(() => {
+      // Marquee
+      const mq = marqueeRef.current;
+      if (mq) {
+        const inner = mq.querySelector('.lp-mq-inner');
+        gsap.to(inner, { x: '-50%', duration: 22, ease: 'none', repeat: -1 });
+      }
 
-    // Feature cards
-    if (featRef.current) {
-      gsap.from(featRef.current.querySelectorAll('.lp-feat-card'), {
-        scrollTrigger: { trigger: featRef.current, start: 'top 80%' },
-        y: 50, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out',
-      });
-    }
+      // Feature cards
+      if (featRef.current) {
+        gsap.from(featRef.current.querySelectorAll('.lp-feat-card'), {
+          scrollTrigger: { trigger: featRef.current, start: 'top 80%' },
+          y: 50, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out',
+        });
+      }
 
-    // CTA section
-    if (ctaSectRef.current) {
-      gsap.from(ctaSectRef.current.querySelectorAll('.lp-anim'), {
-        scrollTrigger: { trigger: ctaSectRef.current, start: 'top 75%' },
-        y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
-      });
-    }
+      // CTA section
+      if (ctaSectRef.current) {
+        gsap.from(ctaSectRef.current.querySelectorAll('.lp-anim'), {
+          scrollTrigger: { trigger: ctaSectRef.current, start: 'top 75%' },
+          y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+        });
+      }
+    }, rootRef);
 
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+    return () => ctx.revert();
   }, []);
 
   // ── Magnetic button ─────────────────────────────────────────────────────────
@@ -222,6 +234,121 @@ export default function LandingPage() {
             <a href="#features" className="lp-btn-ghost">See features</a>
           </div>
 
+          {/* Live High-Fidelity App Preview (Nexus-style) */}
+          <div className="lp-dashboard-wrapper lp-anim">
+            <div className="lp-mockup-header">
+              <div className="lp-mockup-dots">
+                <span className="lp-md-dot red"></span>
+                <span className="lp-md-dot yellow"></span>
+                <span className="lp-md-dot green"></span>
+              </div>
+              <div className="lp-mockup-url">assetflow.enterprise/dashboard</div>
+            </div>
+            <div className="lp-mockup-body">
+              {/* Collapsible Sidebar */}
+              <div className="lp-mockup-sidebar">
+                <div className="lp-sidebar-brand">
+                  <div className="lp-brand-icon"><Ico path={ICONS.box} size={13} /></div>
+                  <span>AssetFlow</span>
+                </div>
+                <nav className="lp-sidebar-nav">
+                  <div className="lp-side-item active">
+                    <Ico path={ICONS.chart} size={12} /> <span>Overview</span>
+                  </div>
+                  <div className="lp-side-item">
+                    <Ico path={ICONS.box} size={12} /> <span>Assets Directory</span>
+                  </div>
+                  <div className="lp-side-item">
+                    <Ico path={ICONS.calendar} size={12} /> <span>Resource Bookings</span>
+                  </div>
+                  <div className="lp-side-item">
+                    <Ico path={ICONS.tool} size={12} /> <span>Maintenance Approval</span>
+                  </div>
+                  <div className="lp-side-item">
+                    <Ico path={ICONS.shield} size={12} /> <span>Audit Cycles</span>
+                  </div>
+                </nav>
+              </div>
+
+              {/* Main Content Workspace */}
+              <div className="lp-mockup-workspace">
+                <div className="lp-workspace-header">
+                  <div className="lp-header-title">System Architecture Overview</div>
+                  <div className="lp-header-user">
+                    <Ico path={ICONS.users} size={12} />
+                    <span>Asset Manager</span>
+                  </div>
+                </div>
+
+                {/* Dashboard Widgets */}
+                <div className="lp-mockup-widgets">
+                  <div className="lp-m-widget">
+                    <div className="lp-widget-lbl">Total Registered</div>
+                    <div className="lp-widget-num">1,428</div>
+                    <div className="lp-widget-trend trend-green">Available: 843</div>
+                  </div>
+                  <div className="lp-m-widget">
+                    <div className="lp-widget-lbl">Conflict Guard</div>
+                    <div className="lp-widget-num">Active</div>
+                    <div className="lp-widget-trend trend-green">Overlap Blocked</div>
+                  </div>
+                  <div className="lp-m-widget">
+                    <div className="lp-widget-lbl">Maintenance Approval</div>
+                    <div className="lp-widget-num">6 Pending</div>
+                    <div className="lp-widget-trend trend-red">Requires Audit</div>
+                  </div>
+                </div>
+
+                {/* Simulated Data Table */}
+                <div className="lp-mockup-table-container">
+                  <div className="lp-table-title">Real-Time Lifecycle Tracking</div>
+                  <table className="lp-mockup-table">
+                    <thead>
+                      <tr>
+                        <th>Asset Item</th>
+                        <th>Category</th>
+                        <th>Department</th>
+                        <th>Transition Lifecycle</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Tesla Model Y</td>
+                        <td>Vehicle</td>
+                        <td>Logistics</td>
+                        <td><span className="lp-mock-badge mock-allocated">Allocated</span></td>
+                      </tr>
+                      <tr>
+                        <td>Conference Room Beta</td>
+                        <td>Workspace</td>
+                        <td>Marketing</td>
+                        <td><span className="lp-mock-badge mock-reserved">Reserved</span></td>
+                      </tr>
+                      <tr>
+                        <td>Velo Ergonomic Desk</td>
+                        <td>Furniture</td>
+                        <td>Operations</td>
+                        <td><span className="lp-mock-badge mock-available">Available</span></td>
+                      </tr>
+                      <tr>
+                        <td>Optics Lab Scanner</td>
+                        <td>Equipment</td>
+                        <td>R&amp;D Engineering</td>
+                        <td><span className="lp-mock-badge mock-maintenance">Under Maintenance</span></td>
+                      </tr>
+                      <tr>
+                        <td>ThinkPad Carbon X1</td>
+                        <td>Hardware</td>
+                        <td>IT Support</td>
+                        <td><span className="lp-mock-badge mock-retired">Retired</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Stats strip */}
           <div className="lp-stats" ref={statsRef}>
             {STATS.map((s, i) => (
@@ -268,6 +395,29 @@ export default function LandingPage() {
               </div>
               <h3 className="lp-feat-title">{f.title}</h3>
               <p className="lp-feat-sub">{f.sub}</p>
+              {f.title === 'Asset Registry' && (
+                <div className="lp-feat-micro-card">
+                  <div className="lp-micro-tag">Full Lifecycle</div>
+                  <div className="lp-lifecycle-states">
+                    <span className="lp-state-active">Available</span>
+                    <span className="lp-arrow">→</span>
+                    <span>Allocated</span>
+                    <span className="lp-arrow">→</span>
+                    <span>Under Maintenance</span>
+                    <span className="lp-arrow">→</span>
+                    <span>Retired</span>
+                  </div>
+                </div>
+              )}
+              {f.title === 'Resource Booking' && (
+                <div className="lp-feat-micro-card">
+                  <div className="lp-micro-tag">Overlap Defense</div>
+                  <div className="lp-defense-status">
+                    <span className="lp-defense-pill">Active Protection</span>
+                    <span className="lp-defense-desc">Conflict Prevention Enabled</span>
+                  </div>
+                </div>
+              )}
               <div className="lp-feat-line" />
             </div>
           ))}
@@ -290,7 +440,15 @@ export default function LandingPage() {
             <div key={i} className="lp-step">
               <div className="lp-step-n">{s.n}</div>
               <div className="lp-step-body">
-                <h3 className="lp-step-title">{s.t}</h3>
+                <div className="lp-step-header">
+                  <h3 className="lp-step-title">{s.t}</h3>
+                  {s.t === 'Allocate & Book' && (
+                    <span className="lp-inline-badge badge-defense">Conflict Defense Active</span>
+                  )}
+                  {s.t === 'Maintain & Audit' && (
+                    <span className="lp-inline-badge badge-audit">Audit Validation Logged</span>
+                  )}
+                </div>
                 <p  className="lp-step-desc">{s.d}</p>
               </div>
               {i < 3 && <div className="lp-step-line" />}
