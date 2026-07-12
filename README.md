@@ -1,10 +1,7 @@
 # ODOO
 
-A production-grade monorepo scaffold combining a React frontend with a polyglot microservices backend.
-
-## Overview
-
-This repository is organized as a monorepo with a clear separation between the client application and independently deployable backend services. The API contract is described in a shared OpenAPI specification, allowing every service and client to stay in sync.
+AssetFlow
+Enterprise Asset & Resource Management System
 
 ## Repository Structure
 
