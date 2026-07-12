@@ -2,6 +2,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import LandingPage from './landing-page/LandingPage';
+import SignIn from './auth/SignIn';
+import SignUp from './auth/SignUp';
+import AuthGateway from './auth/AuthGateway';
+import OrgSignUp from './auth/OrgSignUp';
 import DashboardLayout from './dashboard/DashboardLayout';
 import DashboardOverview from './dashboard/pages/DashboardOverview';
 import AssetsDirectory from './dashboard/pages/AssetsDirectory';
@@ -25,6 +29,12 @@ function App() {
         <Routes>
           {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Auth Pages */}
+          <Route path="/get-started" element={<AuthGateway />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/org/register" element={<OrgSignUp />} />
 
           {/* Dashboard Route Group */}
           <Route path="/dashboard" element={<DashboardLayout />}>
