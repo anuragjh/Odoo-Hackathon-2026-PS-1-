@@ -180,12 +180,60 @@
   overflow: hidden;
   border-bottom: 1px solid var(--border);
 }
+
+/* ── Animated Background Ripple ── */
+.lp-ripple-bg-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+@keyframes cell-ripple {
+  0% {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-cell-ripple {
+  animation: cell-ripple var(--duration, 200ms) ease-out none 1 var(--delay, 0ms);
+}
+
+/* Individual Cell Box interactivity */
+.cell {
+  background-color: transparent !important;
+  border-width: 0.5px !important;
+  border-style: solid !important;
+  border-color: rgba(255, 255, 255, 0.08) !important; /* border-white/10 equivalent */
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.cell:hover {
+  background-color: rgba(63, 63, 70, 0.3) !important; /* bg-zinc-800/30 equivalent */
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  cursor: crosshair;
+}
+
 .lp-hero-inner {
   max-width: 860px;
   margin: 0 auto;
   text-align: center;
   position: relative;
   z-index: 2;
+  pointer-events: none;
+}
+.lp-cta-row a,
+.lp-cta-row button,
+.lp-dashboard-wrapper,
+.lp-stats {
+  pointer-events: auto;
 }
 .lp-tag {
   display: inline-block;

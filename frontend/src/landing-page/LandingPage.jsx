@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { BackgroundRippleEffect } from '../components/ui/BackgroundRippleEffect';
 import './LandingPage.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -205,6 +206,9 @@ export default function LandingPage() {
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="lp-hero" ref={heroRef}>
+        <div className="lp-ripple-bg-container">
+          <BackgroundRippleEffect />
+        </div>
         <div className="lp-hero-inner">
           <div className="lp-tag" ref={tagRef}>
             Enterprise Asset &amp; Resource Management
