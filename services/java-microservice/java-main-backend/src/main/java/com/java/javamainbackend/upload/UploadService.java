@@ -5,7 +5,6 @@ import com.cloudinary.utils.ObjectUtils;
 import com.java.javamainbackend.admin.organisationsetup.common.exception.BadRequestException;
 import java.io.IOException;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,19 +12,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class UploadService {
 
     private final Cloudinary cloudinary;
-    private final String cloudName;
 
-    public UploadService(Cloudinary cloudinary, @Value("${CLOUDINARY_CLOUD_NAME:}") String cloudName) {
+    public UploadService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
-        this.cloudName = cloudName;
     }
 
     public UploadResponse upload(MultipartFile file, String folder, String resourceType) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("No file provided");
         }
-        boolean configured = (cloudName != null && !cloudName.isBlank())
-                || cloudinary.config.cloudName != null;
+        boolean configured = cloudinary.config.cloudName != null && !cloudinary.config.cloudName.isBlank();
         if (!configured) {
             throw new BadRequestException("File uploads are not configured on the server");
         }
