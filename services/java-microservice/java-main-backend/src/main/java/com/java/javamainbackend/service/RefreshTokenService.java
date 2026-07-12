@@ -22,7 +22,6 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AppProperties properties;
 
-    /** Creates a session and returns the RAW token (the only copy in existence). */
     @Transactional
     public String create(UUID userId) {
         String rawToken = TokenGenerator.urlSafeToken();
@@ -34,12 +33,6 @@ public class RefreshTokenService {
         return rawToken;
     }
 
-    /**
-     * Validates and atomically claims (revokes) the presented token as part of
-     * rotation. Throws 401 on unknown/expired tokens; on REUSE of an already
-     * rotated token it revokes all of the user's sessions first.
-     * Runs in its own transaction so those writes survive the thrown 401.
-     */
     @Transactional
     public RefreshToken validateAndClaim(String rawToken) {
         String tokenHash = TokenGenerator.sha256Hex(rawToken);
@@ -53,7 +46,6 @@ public class RefreshTokenService {
             refreshTokenRepository.claimToken(tokenHash); // tidy up
             throw new UnauthorizedException("REFRESH_TOKEN_EXPIRED", "Refresh token expired. Please log in again.");
         }
-        // Atomic claim - a concurrent request racing us gets 0 rows here.
         if (refreshTokenRepository.claimToken(tokenHash) == 0) {
             reuseDetected(stored.getUserId());
         }
@@ -67,19 +59,16 @@ public class RefreshTokenService {
                 "Refresh token reuse detected. All sessions have been revoked. Please log in again.");
     }
 
-    /** Best-effort revoke for logout - idempotent, never fails. */
     @Transactional
     public void revoke(String rawToken) {
         refreshTokenRepository.claimToken(TokenGenerator.sha256Hex(rawToken));
     }
 
-    /** Password changed / reset, or token reuse -> kill every session. */
     @Transactional
     public void revokeAllForUser(UUID userId) {
         refreshTokenRepository.revokeAllByUserId(userId);
     }
 
-    /** Nightly cleanup of long-expired rows. */
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void purgeExpiredTokens() {

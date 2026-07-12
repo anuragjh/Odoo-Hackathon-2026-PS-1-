@@ -26,7 +26,6 @@ import java.util.UUID;
 @Slf4j
 public class AdminUserService {
 
-    /** Roles an admin may assign. ADMIN itself is intentionally excluded. */
     private static final Set<Role> ASSIGNABLE_ROLES =
             EnumSet.of(Role.EMPLOYEE, Role.ASSET_MANAGER, Role.DEPARTMENT_HEAD);
 
@@ -85,7 +84,6 @@ public class AdminUserService {
         return UserResponse.from(saved);
     }
 
-    /** Promote / demote between EMPLOYEE, ASSET_MANAGER and DEPARTMENT_HEAD. */
     @Transactional
     public UserResponse updateRole(UserPrincipal admin, UUID userId, Role newRole) {
         if (!ASSIGNABLE_ROLES.contains(newRole)) {
@@ -108,7 +106,7 @@ public class AdminUserService {
         }
         Role oldRole = user.getRole();
         user.setRole(newRole);
-        user.setUpdatedBy(admin.getId()); // audit: which admin changed the role
+        user.setUpdatedBy(admin.getId());
         User saved = userRepository.save(user);
         log.info("Admin {} changed role of {} from {} to {}", admin.getEmail(), saved.getEmail(), oldRole, newRole);
         return UserResponse.from(saved);
@@ -129,7 +127,6 @@ public class AdminUserService {
         return UserResponse.from(saved);
     }
 
-    /** Multi-tenant guard: resolves the user WITHIN the admin's organization only. */
     private User findInOrganization(UserPrincipal admin, UUID userId) {
         return userRepository.findByIdAndOrganizationId(userId, admin.getOrganizationId())
                 .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND",

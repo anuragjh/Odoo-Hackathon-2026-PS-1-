@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
 
     private final AppProperties properties;
-    private final MailjetClient mailjetClient; // null when not configured
+    private final MailjetClient mailjetClient;
     private final boolean configured;
     private final String brandName;
 
@@ -88,7 +88,6 @@ public class EmailService {
                 "account approved", link);
     }
 
-    // ------------------------------------------------------------------
 
     private void send(String to, String toName, String subject, String html, String text,
                       String kind, String link) {

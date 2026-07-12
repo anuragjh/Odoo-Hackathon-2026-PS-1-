@@ -34,24 +34,14 @@ public class RedisTokenService {
     private final StringRedisTemplate redis;
     private final AppProperties properties;
 
-    // ------------------------------------------------------------------
-    // Email verification tokens
-    // ------------------------------------------------------------------
-
-    /** Issues a fresh verification token, invalidating any previous one. */
     public String issueVerificationToken(UUID userId) {
         return issueToken(userId, VERIFY_TOKEN_KEY, VERIFY_USER_KEY,
                 Duration.ofHours(properties.security().verificationTokenTtlHours()));
     }
 
-    /** Atomically consumes (GETDEL) the token - it can never be used twice. */
     public Optional<UUID> consumeVerificationToken(String rawToken) {
         return consumeToken(rawToken, VERIFY_TOKEN_KEY, VERIFY_USER_KEY);
     }
-
-    // ------------------------------------------------------------------
-    // Password reset tokens
-    // ------------------------------------------------------------------
 
     public String issueResetToken(UUID userId) {
         return issueToken(userId, RESET_TOKEN_KEY, RESET_USER_KEY,
@@ -62,30 +52,17 @@ public class RedisTokenService {
         return consumeToken(rawToken, RESET_TOKEN_KEY, RESET_USER_KEY);
     }
 
-    // ------------------------------------------------------------------
-    // Cooldowns (rate limiting)
-    // ------------------------------------------------------------------
-
-    /**
-     * true  -> cooldown acquired, caller may proceed
-     * false -> an identical action ran within the window - reject with 429
-     */
     public boolean tryAcquireCooldown(String bucket, String identifier) {
         String key = COOLDOWN_KEY + bucket + ":" + identifier;
         Duration ttl = Duration.ofSeconds(properties.security().resendCooldownSeconds());
         return Boolean.TRUE.equals(redis.opsForValue().setIfAbsent(key, "1", ttl));
     }
 
-    // ------------------------------------------------------------------
-    // Temporary account lock (auto-unlock via TTL)
-    // ------------------------------------------------------------------
-
     public void lockAccount(UUID userId) {
         redis.opsForValue().set(LOCK_KEY + userId, "1",
                 Duration.ofMinutes(properties.security().lockDurationMinutes()));
     }
 
-    /** false once the TTL elapsed -> the account may be auto-unlocked. */
     public boolean isAccountLockActive(UUID userId) {
         return Boolean.TRUE.equals(redis.hasKey(LOCK_KEY + userId));
     }
@@ -94,9 +71,6 @@ public class RedisTokenService {
         redis.delete(LOCK_KEY + userId);
     }
 
-    // ------------------------------------------------------------------
-    // Internals
-    // ------------------------------------------------------------------
 
     private String issueToken(UUID userId, String tokenKeyPrefix, String userKeyPrefix, Duration ttl) {
         String rawToken = TokenGenerator.urlSafeToken();

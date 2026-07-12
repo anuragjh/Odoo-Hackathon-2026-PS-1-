@@ -32,7 +32,6 @@ public class JwtService {
                     "JWT_SECRET must be configured and be at least 32 characters long. "
                             + "Generate one with: openssl rand -base64 64");
         }
-        // signWith(key) below auto-selects the strongest HMAC the key allows.
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -53,10 +52,6 @@ public class JwtService {
                 .compact();
     }
 
-    /**
-     * Validates signature, expiry and issuer; throws io.jsonwebtoken.JwtException
-     * (or IllegalArgumentException) when anything is off.
-     */
     public Claims parseAccessToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(key)

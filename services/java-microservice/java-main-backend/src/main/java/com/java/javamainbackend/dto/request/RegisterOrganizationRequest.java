@@ -12,7 +12,6 @@ public record RegisterOrganizationRequest(
         @Size(min = 2, max = 200, message = "Organization name must be 2-200 characters")
         String organizationName,
 
-        @NotBlank(message = "Organization code is required")
         @Size(min = 3, max = 30, message = "Organization code must be 3-30 characters")
         @Pattern(regexp = "^[A-Za-z0-9_-]+$",
                 message = "Organization code may only contain letters, digits, '-' and '_'")

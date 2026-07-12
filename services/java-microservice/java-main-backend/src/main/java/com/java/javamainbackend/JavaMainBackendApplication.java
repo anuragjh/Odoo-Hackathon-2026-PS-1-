@@ -13,17 +13,10 @@ public class JavaMainBackendApplication {
     public static void main(String[] args) {
         loadDotenv();
         SpringApplication app = new SpringApplication(JavaMainBackendApplication.class);
-        // The auth module and the admin/organisationsetup module contain classes with
-        // identical simple names (UserRepository, JwtService, SecurityConfig, ...).
-        // Fully-qualified bean names avoid ConflictingBeanDefinitionException across them.
         app.setBeanNameGenerator(new FullyQualifiedAnnotationBeanNameGenerator());
         app.run(args);
     }
 
-    /**
-     * Loads .env into system properties so ${VAR} placeholders resolve.
-     * Real OS environment variables always take precedence over .env values.
-     */
     private static void loadDotenv() {
         Dotenv dotenv = Dotenv.configure()
                 .ignoreIfMissing()
