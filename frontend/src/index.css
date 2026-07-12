@@ -4,65 +4,81 @@
 
 @layer base {
   :root {
-    --background: 160 20% 98%;      /* Very soft, clean green-tinted light background */
-    --foreground: 160 50% 10%;      /* Dark emerald text */
+    --background: 217 56% 94%;      /* Neumorphic base background */
+    --foreground: 217 40% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 50% 10%;
+    --card: 217 56% 94%;            /* Neumorphic base background for cards */
+    --card-foreground: 217 40% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 50% 10%;
+    --popover: 217 56% 94%;
+    --popover-foreground: 217 40% 20%;
 
-    --primary: 160 84% 30%;        /* Dynamic emerald green */
-    --primary-foreground: 160 20% 98%;
+    --primary: 221 83% 53%;        /* Vivid Blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 30% 94%;      /* Muted light green */
-    --secondary-foreground: 160 84% 30%;
+    --secondary: 217 50% 90%;      /* Slightly darker for inset elements */
+    --secondary-foreground: 221 83% 53%;
 
-    --muted: 160 15% 92%;
-    --muted-foreground: 160 20% 40%;
+    --muted: 217 30% 88%;
+    --muted-foreground: 217 20% 45%;
 
-    --accent: 160 30% 94%;
-    --accent-foreground: 160 84% 30%;
+    --accent: 217 50% 90%;
+    --accent-foreground: 221 83% 53%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 160 20% 88%;
-    --input: 160 20% 88%;
-    --ring: 160 84% 30%;
+    --border: 217 56% 94%;          /* Same as background to hide hard borders */
+    --input: 217 56% 94%;
+    --ring: 221 83% 53%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;                 /* Soft, curvy corners */
+
+    /* Neumorphism Light Theme */
+    --neu-bg: #e6edf8;
+    --neu-flat-shadow: 5px 5px 10px #c8d0e7, -5px -5px 10px #ffffff;
+    --neu-pressed-shadow: inset 4px 4px 8px #c8d0e7, inset -4px -4px 8px #ffffff;
+    --neu-hover-shadow: 2px 2px 5px #c8d0e7, -2px -2px 5px #ffffff;
+    --neu-btn-text: #5e6e8c;
+    --neu-btn-text-active: #2563eb;
   }
 
   .dark {
-    --background: 160 40% 6%;       /* Dark deep forest-black background */
-    --foreground: 150 20% 98%;
+    --background: 0 0% 4%;          /* #0a0a0a - Pure Deep Black */
+    --foreground: 0 0% 90%;
 
-    --card: 160 40% 8%;
-    --card-foreground: 150 20% 98%;
+    --card: 0 0% 8%;                /* #141414 - Dark Neumorphic Card Base */
+    --card-foreground: 0 0% 90%;
 
-    --popover: 160 40% 8%;
-    --popover-foreground: 150 20% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 90%;
 
-    --primary: 160 80% 40%;        /* Bright forest green */
-    --primary-foreground: 160 40% 6%;
+    --primary: 217 91% 60%;        /* Bright Blue */
+    --primary-foreground: 0 0% 4%;
 
-    --secondary: 160 25% 14%;
-    --secondary-foreground: 150 20% 98%;
+    --secondary: 0 0% 12%;          /* #1f1f1f */
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 160 20% 14%;
-    --muted-foreground: 160 15% 65%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 160 25% 14%;
-    --accent-foreground: 150 20% 98%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 217 91% 60%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 150 20% 98%;
+    --destructive-foreground: 0 0% 90%;
 
-    --border: 160 20% 18%;
-    --input: 160 20% 18%;
-    --ring: 160 80% 40%;
+    --border: 0 0% 4%;
+    --input: 0 0% 4%;
+    --ring: 217 91% 60%;
+
+    /* Neumorphism Dark Theme (Black Type) */
+    --neu-bg: #121212;
+    --neu-flat-shadow: 5px 5px 10px #050505, -5px -5px 10px #1f1f1f;
+    --neu-pressed-shadow: inset 4px 4px 8px #050505, inset -4px -4px 8px #1f1f1f;
+    --neu-hover-shadow: 2px 2px 5px #050505, -2px -2px 5px #1f1f1f;
+    --neu-btn-text: #a3a3a3;
+    --neu-btn-text-active: #3b82f6;
   }
 }
 
@@ -89,4 +105,208 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Neumorphism Utility Classes */
+.neu-sidebar {
+  background-color: var(--neu-bg) !important;
+  border-right: none !important;
+}
+
+.neu-btn-flat {
+  background-color: var(--neu-bg) !important;
+  color: var(--neu-btn-text) !important;
+  box-shadow: var(--neu-flat-shadow) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neu-btn-flat:hover {
+  color: var(--neu-btn-text-active) !important;
+  box-shadow: var(--neu-hover-shadow) !important;
+  transform: translateY(-1px);
+}
+
+.neu-btn-pressed {
+  background-color: var(--neu-bg) !important;
+  color: var(--neu-btn-text-active) !important;
+  box-shadow: var(--neu-pressed-shadow) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neu-logo-circle {
+  background-color: var(--neu-bg) !important;
+  box-shadow: var(--neu-flat-shadow) !important;
+  color: var(--neu-btn-text-active) !important;
+  border: none !important;
+}
+
+.neu-logo-circle:hover {
+  box-shadow: var(--neu-pressed-shadow) !important;
+}
+
+.neu-user-footer {
+  background-color: var(--neu-bg) !important;
+  box-shadow: var(--neu-pressed-shadow) !important;
+  border-radius: 1rem !important;
+  padding: 0.75rem !important;
+}
+
+/* Global Neumorphism Overrides */
+
+/* Cards */
+.bg-card, 
+div.border {
+  background-color: var(--neu-bg) !important;
+  box-shadow: var(--neu-flat-shadow) !important;
+  border-color: transparent !important;
+}
+
+/* Modals */
+.fixed .bg-card,
+.fixed .shadow-xl {
+  background-color: var(--neu-bg) !important;
+  box-shadow: var(--neu-flat-shadow) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Remove card/panel borders */
+.border-border,
+.border-t,
+.border-b,
+.border-r,
+.border-l {
+  border-color: transparent !important;
+}
+
+/* Header styling */
+header {
+  background-color: var(--neu-bg) !important;
+  border-bottom: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Inputs & Form Elements */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+  background-color: var(--neu-bg) !important;
+  color: var(--foreground) !important;
+  box-shadow: var(--neu-pressed-shadow) !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+  padding: 0.625rem 0.875rem;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+}
+
+input.pl-9 {
+  padding-left: 2.25rem !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+  box-shadow: var(--neu-pressed-shadow), 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Buttons */
+button.bg-primary {
+  background-color: var(--neu-bg) !important;
+  color: var(--neu-btn-text-active) !important;
+  box-shadow: var(--neu-flat-shadow) !important;
+  border: none !important;
+  font-weight: 700 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button.bg-primary:hover {
+  box-shadow: var(--neu-hover-shadow) !important;
+  transform: translateY(-1px) !important;
+}
+
+button.bg-primary:active {
+  box-shadow: var(--neu-pressed-shadow) !important;
+  transform: translateY(0) !important;
+}
+
+/* Standard Buttons & Secondary Buttons */
+button.border-border, 
+button.bg-card, 
+button.bg-secondary,
+button.hover\:bg-secondary {
+  background-color: var(--neu-bg) !important;
+  color: var(--neu-btn-text) !important;
+  box-shadow: var(--neu-flat-shadow) !important;
+  border: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button.border-border:hover, 
+button.bg-card:hover, 
+button.bg-secondary:hover,
+button.hover\:bg-secondary:hover {
+  box-shadow: var(--neu-hover-shadow) !important;
+  color: var(--neu-btn-text-active) !important;
+  transform: translateY(-1px) !important;
+}
+
+button.border-border:active, 
+button.bg-card:active, 
+button.bg-secondary:active,
+button.hover\:bg-secondary:active {
+  box-shadow: var(--neu-pressed-shadow) !important;
+  transform: translateY(0) !important;
+}
+
+/* List Items / Selections */
+.bg-primary\/5.border-primary,
+.border-primary.bg-primary\/5,
+.bg-primary\/10.ring-primary\/20,
+.bg-secondary\/30.border-border,
+.hover\:bg-secondary\/30:hover {
+  background-color: var(--neu-bg) !important;
+  box-shadow: var(--neu-pressed-shadow) !important;
+  border-color: transparent !important;
+}
+
+.selected-item,
+.active-item {
+  box-shadow: var(--neu-pressed-shadow) !important;
+}
+
+/* KPI primary blue card styling */
+div.bg-primary {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 5px 5px 12px rgba(37, 99, 235, 0.4), -5px -5px 12px rgba(255, 255, 255, 0.6) !important;
+  border: none !important;
+}
+
+.dark div.bg-primary {
+  background-color: #3b82f6 !important;
+  color: #151922 !important;
+  box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.5), -5px -5px 12px rgba(59, 130, 246, 0.15) !important;
+  border: none !important;
+}
+
+/* Progress / Slider Track */
+.bg-primary\/10 {
+  background-color: var(--neu-bg) !important;
+  box-shadow: var(--neu-pressed-shadow) !important;
+}
+
+/* Badges */
+span.rounded-full {
+  box-shadow: var(--neu-flat-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }

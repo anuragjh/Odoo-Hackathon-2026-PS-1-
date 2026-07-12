@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
-// import LandingPage from './landing-page/LandingPage';
+import LandingPage from './landing-page/LandingPage';
 import DashboardLayout from './dashboard/DashboardLayout';
 import DashboardOverview from './dashboard/pages/DashboardOverview';
 import AssetsDirectory from './dashboard/pages/AssetsDirectory';
@@ -23,8 +23,8 @@ function App() {
     <AppProvider>
       <BrowserRouter>
         <Routes>
-          {/* Redirect Root to Dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Landing Page */}
+          <Route path="/" element={<LandingPage />} />
 
           {/* Dashboard Route Group */}
           <Route path="/dashboard" element={<DashboardLayout />}>
