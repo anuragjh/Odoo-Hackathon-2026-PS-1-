@@ -18,6 +18,8 @@ import {
   Building2,
   Bell,
   ChevronDown,
+  Menu,
+  X,
 } from 'lucide-react';
 
 /* ── Navigation Structure (mirrors blueprint) ────────────────── */
@@ -72,6 +74,7 @@ export default function DashboardLayout() {
   const { currentUser, notificationCount } = useContext(AppContext);
   const [notifOpen, setNotifOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => navigate('/');
 
@@ -92,12 +95,19 @@ export default function DashboardLayout() {
       }}
     >
       {/* ── SIDEBAR ───────────────────────────────────────────── */}
-      <aside className="af-sidebar">
+      <aside className={`af-sidebar${isSidebarOpen ? ' open' : ''}`}>
         {/* Logo */}
-        <div className="af-sidebar-logo">
+        <div className="af-sidebar-logo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <span className="montenegrin-gothic-one-regular" style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>
             AssetFlow
           </span>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="af-sidebar-close-btn"
+            aria-label="Close Sidebar"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -113,6 +123,7 @@ export default function DashboardLayout() {
                     key={item.path}
                     to={item.path}
                     className={`af-nav-item${active ? ' active' : ''}`}
+                    onClick={() => setIsSidebarOpen(false)}
                   >
                     <Icon size={15} />
                     <span>{item.name}</span>
@@ -247,6 +258,13 @@ export default function DashboardLayout() {
         <header className="af-header" style={{ position: 'relative', zIndex: 1, backdropFilter: 'blur(10px)', background: 'rgba(24, 24, 27, 0.4)', borderBottom: '1px solid var(--border-default)' }}>
           {/* Left — breadcrumb / page indicator */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="af-hamburger-btn"
+              aria-label="Open Sidebar"
+            >
+              <Menu size={18} />
+            </button>
             <span
               style={{
                 fontSize: '0.6875rem',
@@ -393,6 +411,14 @@ export default function DashboardLayout() {
           </div>
         </div>
       </Modal>
+
+      {/* Sidebar backdrop overlay for mobile/tablet */}
+      {isSidebarOpen && (
+        <div
+          className="af-sidebar-backdrop"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Menu, X } from 'lucide-react';
 import { BackgroundRippleEffect } from '../components/ui/BackgroundRippleEffect';
 import './LandingPage.css';
 
@@ -58,6 +59,7 @@ const STATS = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const rootRef    = useRef(null);
   const heroRef    = useRef(null);
   const tagRef     = useRef(null);
@@ -190,7 +192,7 @@ export default function LandingPage() {
       <div className="lp-cursor-dot"  ref={cursorDot} />
 
       {/* ── Nav ───────────────────────────────────────────────────────────── */}
-      <nav className="lp-nav" ref={navRef}>
+      <nav className={`lp-nav${isMobileMenuOpen ? ' lp-nav-mobile-open' : ''}`} ref={navRef}>
         <div className="lp-nav-inner">
           <div className="lp-logo montenegrin-gothic-one-regular" style={{ fontSize: '1.2rem', color: '#fff' }}>
             AssetFlow
@@ -202,6 +204,31 @@ export default function LandingPage() {
           <button className="lp-nav-cta" onClick={() => navigate('/get-started')}>
             Launch App <Ico path={ICONS.arrow} size={14} />
           </button>
+          
+          <button 
+            className="lp-hamburger" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {/* Mobile navigation menu overlay */}
+        <div className={`lp-mobile-drawer${isMobileMenuOpen ? ' open' : ''}`}>
+          <div className="lp-mobile-drawer-links">
+            <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>Features</a>
+            <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
+            <button 
+              className="lp-mobile-drawer-cta" 
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                navigate('/get-started');
+              }}
+            >
+              Launch App <Ico path={ICONS.arrow} size={14} />
+            </button>
+          </div>
         </div>
       </nav>
 

@@ -5,7 +5,8 @@ import {
 } from 'recharts';
 import {
   Play, Pause, Square, ShieldAlert,
-  FolderPlus, CalendarPlus, Hammer, Laptop, Armchair, Car
+  FolderPlus, CalendarPlus, Hammer, Laptop, Armchair, Car,
+  Power, Clock
 } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Alert from '../../components/ui/Alert';
@@ -16,6 +17,7 @@ function DashboardOverview() {
   const {
     assets, bookings, maintenance, transfers, employees,
     registerAsset, createBooking, raiseMaintenance,
+    theme,
   } = useContext(AppContext);
 
   // Quick Action Modal States
@@ -141,6 +143,8 @@ function DashboardOverview() {
   };
 
   // ── RENDER ────────────────────────────────────────────────────────
+  const progress = seconds / 60;
+
   return (
     <div className="af-page animate-slide-in-up">
 
@@ -175,7 +179,7 @@ function DashboardOverview() {
       )}
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.75rem' }}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="af-stat-card glass-card hover-lift stat-card-glow-success">
           <span className="af-stat-label">Available</span>
           <span className="af-stat-value">{availableCount}</span>
@@ -229,7 +233,7 @@ function DashboardOverview() {
       </div>
 
       {/* Recent Activity + Audit Clock */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', gap: '1rem', alignItems: 'start' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 items-start">
         {/* Recent Activity */}
         <div className="af-card" style={{ padding: '1.25rem' }}>
           <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.875rem' }}>
@@ -250,7 +254,7 @@ function DashboardOverview() {
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: 'var(--radius-sm)', background: 'var(--accent-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: 'var(--radius-sm)', background: 'var(--accent-bg)', display: 'flex', alignItems: 'center', justifycontent: 'center' }}>
                     {asset.category === 'Electronics' ? <Laptop size={13} style={{ color: 'var(--accent)' }} />
                       : asset.category === 'Furniture' ? <Armchair size={13} style={{ color: 'var(--accent)' }} />
                       : <Car size={13} style={{ color: 'var(--accent)' }} />}
@@ -268,39 +272,211 @@ function DashboardOverview() {
           </div>
         </div>
 
-        {/* Audit Clock */}
-        <div className="af-card" style={{ padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.625rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.25rem' }}>
-            Audit Session
-          </div>
-          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.875rem' }}>
-            Tracking Clock
-          </div>
-          <div style={{ fontSize: '1.75rem', fontFamily: 'monospace', fontWeight: 800, color: 'var(--accent)', letterSpacing: '-0.02em', marginBottom: '1rem' }}>
-            {formatTimer()}
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
+        {/* Neumorphic Dial Audit Clock */}
+        <div className="audit-clock-card hover-lift">
+          {/* Top Row: alarm indicator + sliding power toggle */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Live Indicator Badge */}
+            <div style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              padding: '4px 10px', 
+              background: theme === 'light' ? '#cbd5e1' : '#27272a',
+              borderRadius: '999px',
+              border: theme === 'light' ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: theme === 'light' ? '1px 1px 3px rgba(0,0,0,0.05)' : 'none'
+            }}>
+              <span className="pulse-dot" />
+              <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-primary)' }}>Live</span>
+            </div>
+
+            {/* Sliding Toggle Power Switch */}
+            <div 
+              className={`neumorphic-switch${isTimerRunning ? ' active' : ''}`}
               onClick={toggleTimer}
-              style={{
-                width: '34px', height: '34px', borderRadius: '50%',
-                background: 'var(--bg-elevated)', border: '1px solid var(--border-default)',
-                color: 'var(--text-primary)', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
             >
-              {isTimerRunning ? <Pause size={13} /> : <Play size={13} />}
-            </button>
+              <div className="neumorphic-switch-active-bg" />
+              <span className="neumorphic-switch-label" style={{ 
+                left: isTimerRunning ? '10px' : 'auto', 
+                right: isTimerRunning ? 'auto' : '10px',
+                fontSize: '0.625rem',
+                lineHeight: '1'
+              }}>
+                {isTimerRunning ? 'On.' : 'Off'}
+              </span>
+              <div className="neumorphic-switch-knob">
+                <Power size={11} style={{ transform: isTimerRunning ? 'none' : 'scale(0.9)' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Title */}
+          <div style={{ marginTop: '0.875rem', marginBottom: '0.25rem' }}>
+            <div style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.015em' }}>
+              Audit Clock
+            </div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+              Tracking session
+            </div>
+          </div>
+
+          {/* SVG Arch Gauge */}
+          <div style={{ position: 'relative', width: '100%', height: '145px', display: 'flex', justifyContent: 'center', marginTop: '0.5rem' }}>
+            <svg width="220" height="145" viewBox="0 0 200 130" style={{ overflow: 'visible' }}>
+              {/* Radial Ticks */}
+              {Array.from({ length: 41 }).map((_, i) => {
+                const angleDeg = -190 + (i * 200) / 40;
+                const angleRad = (angleDeg * Math.PI) / 180;
+                
+                const r1 = 82; // outer radius
+                const r2 = i % 5 === 0 ? 68 : 74; // major ticks (longer)
+                
+                const x1 = 100 + r1 * Math.cos(angleRad);
+                const y1 = 100 + r1 * Math.sin(angleRad);
+                const x2 = 100 + r2 * Math.cos(angleRad);
+                const y2 = 100 + r2 * Math.sin(angleRad);
+                
+                const currentProgressIdx = Math.round(progress * 40);
+                const isActiveTick = i <= currentProgressIdx;
+                
+                const strokeColor = isActiveTick 
+                  ? 'var(--text-primary)' 
+                  : (theme === 'light' ? '#cbd5e1' : '#27272a');
+                const strokeWidth = i % 5 === 0 ? 1.5 : 1;
+                
+                return (
+                  <line
+                    key={i}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke={strokeColor}
+                    strokeWidth={strokeWidth}
+                    style={{ transition: 'stroke 0.2s' }}
+                  />
+                );
+              })}
+
+              {/* Dotted Inner Arc */}
+              <path
+                d={`M ${100 + 52 * Math.cos(-190 * Math.PI / 180)} ${100 + 52 * Math.sin(-190 * Math.PI / 180)} A 52 52 0 1 1 ${100 + 52 * Math.cos(10 * Math.PI / 180)} ${100 + 52 * Math.sin(10 * Math.PI / 180)}`}
+                fill="none"
+                stroke={theme === 'light' ? '#cbd5e1' : '#27272a'}
+                strokeWidth="1"
+                strokeDasharray="2 3"
+              />
+
+              {/* Dotted Indicator line for 30s center */}
+              <line x1="100" y1="52" x2="100" y2="58" stroke={theme === 'light' ? '#94a3b8' : '#52525b'} strokeWidth="1" />
+
+              {/* Labels on inner dotted boundary */}
+              <text x="62" y="96" fill="var(--text-muted)" fontSize="8" fontWeight="700" textAnchor="middle">0s</text>
+              <text x="100" y="47" fill="var(--text-muted)" fontSize="8" fontWeight="700" textAnchor="middle">30s</text>
+              <text x="138" y="109" fill="var(--text-muted)" fontSize="8" fontWeight="700" textAnchor="middle">60s</text>
+
+              {/* Indicator Needle */}
+              {(() => {
+                const needleAngleDeg = -190 + (progress * 200);
+                const needleAngleRad = (needleAngleDeg * Math.PI) / 180;
+                
+                const nr1 = 86; // needle end
+                const nr2 = 60; // needle start
+                
+                const nx1 = 100 + nr2 * Math.cos(needleAngleRad);
+                const ny1 = 100 + nr2 * Math.sin(needleAngleRad);
+                const nx2 = 100 + nr1 * Math.cos(needleAngleRad);
+                const ny2 = 100 + nr1 * Math.sin(needleAngleRad);
+                
+                return (
+                  <g>
+                    <line
+                      x1={nx1}
+                      y1={ny1}
+                      x2={nx2}
+                      y2={ny2}
+                      stroke="var(--accent)"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      style={{ transition: 'all 0.2s cubic-bezier(0.1, 0.8, 0.2, 1)' }}
+                    />
+                    <circle
+                      cx={nx2}
+                      cy={ny2}
+                      r="2.5"
+                      fill="var(--accent)"
+                      stroke={theme === 'light' ? '#e2e8f0' : '#18181b'}
+                      strokeWidth="1.2"
+                      style={{ transition: 'all 0.2s cubic-bezier(0.1, 0.8, 0.2, 1)' }}
+                    />
+                  </g>
+                );
+              })()}
+            </svg>
+
+            {/* Central Display: hours value + label */}
+            <div style={{ 
+              position: 'absolute', 
+              top: '55%', 
+              left: 0, 
+              right: 0, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              transform: 'translateY(-10px)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', height: '2.5rem' }}>
+                <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.04em', lineHeight: '1' }}>
+                  {hours}
+                </span>
+                <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent)', marginLeft: '1px', verticalAlign: 'super', lineHeight: '1' }}>
+                  h
+                </span>
+              </div>
+              <div style={{ fontSize: '0.625rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.15rem' }}>
+                Hours Elapsed
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Display: ticking timer and reset control */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            marginTop: '0.75rem', 
+            paddingTop: '0.75rem', 
+            borderTop: theme === 'light' ? '1px solid #cbd5e1' : '1px solid var(--border-subtle)'
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '0.58rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Elapsed Time</span>
+              <span style={{ fontFamily: 'monospace', fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-secondary)' }}>
+                {String(minutes).padStart(2,'0')}:{String(seconds).padStart(2,'0')}
+              </span>
+            </div>
+            
+            {/* Reset Button */}
             <button
               onClick={resetTimer}
               style={{
-                width: '34px', height: '34px', borderRadius: '50%',
-                background: 'var(--danger-bg)', border: '1px solid var(--danger-border)',
-                color: 'var(--danger)', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'var(--danger-bg)',
+                border: '1px solid var(--danger-border)',
+                color: 'var(--danger)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
+              title="Reset Session Timer"
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--danger)'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--danger-bg)'; e.currentTarget.style.color = 'var(--danger)'; }}
             >
-              <Square size={11} />
+              <Square size={10} fill="currentColor" />
             </button>
           </div>
         </div>
@@ -334,7 +510,7 @@ function DashboardOverview() {
             <label className="af-label">Asset Name</label>
             <input type="text" value={newAsset.name} onChange={e => setNewAsset({ ...newAsset, name: e.target.value })} placeholder="e.g. MacBook Pro 14" />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label className="af-label">Category</label>
               <select value={newAsset.category} onChange={e => setNewAsset({ ...newAsset, category: e.target.value })}>
@@ -348,7 +524,7 @@ function DashboardOverview() {
               <input type="text" value={newAsset.serial} onChange={e => setNewAsset({ ...newAsset, serial: e.target.value })} placeholder="e.g. SN-3928X" />
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label className="af-label">Acquisition Cost ($)</label>
               <input type="number" value={newAsset.acqCost} onChange={e => setNewAsset({ ...newAsset, acqCost: e.target.value })} placeholder="e.g. 1500" />
@@ -394,7 +570,7 @@ function DashboardOverview() {
             <label className="af-label">Date</label>
             <input type="date" value={newBooking.date} onChange={e => setNewBooking({ ...newBooking, date: e.target.value })} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label className="af-label">Start Time</label>
               <input type="time" value={newBooking.startTime} onChange={e => setNewBooking({ ...newBooking, startTime: e.target.value })} />
