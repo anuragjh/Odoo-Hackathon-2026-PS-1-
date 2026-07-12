@@ -22,4 +22,7 @@ public interface AssetAllocationRepository
 
     long countByOrganizationIdAndStatusAndExpectedReturnDate(
             UUID organizationId, AllocationStatus status, LocalDate date);
+
+    long countByOrganizationIdAndStatusAndExpectedReturnDateGreaterThanEqual(
+            UUID organizationId, AllocationStatus status, LocalDate date);
 }
