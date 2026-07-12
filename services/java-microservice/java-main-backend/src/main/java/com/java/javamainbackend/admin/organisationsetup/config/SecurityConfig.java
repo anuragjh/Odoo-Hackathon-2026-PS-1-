@@ -1,6 +1,7 @@
 package com.java.javamainbackend.admin.organisationsetup.config;
 
 import com.java.javamainbackend.admin.organisationsetup.security.JwtAuthenticationFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -34,5 +35,20 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * The org-setup JwtAuthenticationFilter is a @Component, so Spring Boot would
+     * otherwise auto-register it as a GLOBAL servlet filter and authenticate every
+     * request (installing an AuthPrincipal where the auth module expects a
+     * UserPrincipal). Disabling the servlet-level registration keeps it active ONLY
+     * inside this SecurityFilterChain (added above via addFilterBefore).
+     */
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> orgSetupJwtAuthFilterRegistration(
+            JwtAuthenticationFilter filter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 }

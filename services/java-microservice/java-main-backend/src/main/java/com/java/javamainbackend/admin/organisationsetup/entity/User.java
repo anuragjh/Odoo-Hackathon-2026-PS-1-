@@ -18,7 +18,7 @@ import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "OrgSetupUser")
 @Table(name = "users")
 public class User {
 

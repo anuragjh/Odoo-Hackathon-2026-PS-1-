@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "OrgSetupOrganization")
 @Table(name = "organizations")
 public class Organization {
 
