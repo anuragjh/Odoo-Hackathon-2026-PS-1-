@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { registerOrganization } from '../services/authService';
 import './Auth.css';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -111,6 +112,8 @@ export default function OrgSignUp() {
     if (!admin.adminName.trim()) e.adminName = 'Name is required';
     if (!admin.adminEmail.trim() || !/\S+@\S+\.\S+/.test(admin.adminEmail)) e.adminEmail = 'Valid email required';
     if (admin.adminPassword.length < 8) e.adminPassword = 'Minimum 8 characters';
+    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/.test(admin.adminPassword))
+      e.adminPassword = 'Include an uppercase, lowercase, number and special character';
     if (admin.adminPassword !== admin.confirmPassword) e.confirmPassword = 'Passwords do not match';
     setErrors(e);
     return !Object.keys(e).length;
@@ -149,20 +152,22 @@ export default function OrgSignUp() {
     };
 
     try {
-      // POST /auth/org/register (or /org/register — adjust to your API)
-      const res  = await fetch('/auth/org/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate('/signin?org_created=1');
+      await registerOrganization(payload);
+      navigate('/signin?org_created=1');
+    } catch (err) {
+      if (err.fieldErrors) {
+        setErrors(err.fieldErrors);
+        const adminFields = ['adminName', 'adminEmail', 'adminPassword'];
+        const erroredFields = Object.keys(err.fieldErrors);
+        if (erroredFields.some((f) => !adminFields.includes(f))) {
+          setStep(0);
+        } else {
+          setStep(1);
+        }
+        setSubmitErr('Please correct the highlighted fields.');
       } else {
-        setSubmitErr(data.message || 'Registration failed. Please try again.');
+        setSubmitErr(err.message || 'Registration failed. Please try again.');
       }
-    } catch {
-      setSubmitErr('Unable to reach server. Check your connection.');
     }
     setLoading(false);
   };

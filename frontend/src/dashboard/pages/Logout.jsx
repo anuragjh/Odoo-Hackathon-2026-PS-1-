@@ -1,13 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 function Logout() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    // Clear session details or simply redirect back to landing page
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate('/');
+    }
   };
 
   return (

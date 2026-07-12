@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
 import Modal from '../components/ui/Modal';
 import {
@@ -72,11 +73,18 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, notificationCount } = useContext(AppContext);
+  const { logout } = useAuth();
   const [notifOpen, setNotifOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleLogout = () => navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate('/');
+    }
+  };
 
   const isActive = (path) => {
     if (path === '/dashboard') return location.pathname === '/dashboard';
